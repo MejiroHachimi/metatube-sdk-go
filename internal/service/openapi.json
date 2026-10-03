@@ -884,7 +884,7 @@
               "minLength": 1
             },
             "description": "番号、关键词或支持的数据源条目 URL；URL 查询只读取对应来源。",
-            "example": "arbb014"
+            "example": "MIDA-798"
           },
           {
             "$ref": "#/components/parameters/SearchProvider"
@@ -910,24 +910,23 @@
                   "$ref": "#/components/schemas/MovieSearchResultListResponse"
                 },
                 "examples": {
-                  "arbb014": {
-                    "summary": "ARBB-014",
-                    "description": "仅文档示例隐藏部分露骨内容与色情媒体地址；接口返回不受影响。",
+                  "mida798": {
+                    "summary": "MIDA-798",
                     "value": {
                       "data": [
                         {
                           "actors": [
-                            "南梨央奈"
+                            "石川澪"
                           ],
-                          "cover_url": "[已隐藏]",
-                          "homepage": "[已隐藏]",
-                          "id": "h_1092arbb00014",
-                          "number": "ARBB-014",
+                          "cover_url": "http://pics.dmm.co.jp//digital/video/mida00798/mida00798pl.jpg",
+                          "homepage": "https://www.jav321.com/video/mida00798",
+                          "id": "mida00798",
+                          "number": "MIDA-798",
                           "provider": "JAV321",
-                          "release_date": "2016-07-08T00:00:00Z",
-                          "score": 4,
-                          "thumb_url": "[已隐藏]",
-                          "title": "[已隐藏]"
+                          "release_date": "2026-08-28T00:00:00Z",
+                          "score": 0,
+                          "thumb_url": "http://pics.dmm.co.jp/digital/video/mida00798/mida00798ps.jpg",
+                          "title": "ここを責められると感じちゃう女体・性感帯図鑑 全部、まるはだか全裸わいせつセクハラ健康診断 石川澪"
                         }
                       ]
                     }
@@ -1074,7 +1073,7 @@
       "get": {
         "operationId": "v1_movies__provider___id",
         "summary": "影片详情",
-        "description": "读取指定来源的完整影片详情，provider 和 id 均必填，使用搜索结果中的对应值。当前没有跨来源合并或自动补齐空字段的机制；需要比较多来源时，分别请求各候选的详情。\n\n示例：`GET /v1/movies/JAV321/h_1092arbb00014?lazy=false`。默认 lazy=true 优先读取已存记录，false 刷新该来源。文本和分类只在响应中清洗，保留原始数据库记录。",
+        "description": "读取指定来源的完整影片详情，provider 和 id 均必填，使用搜索结果中的对应值。当前没有跨来源合并或自动补齐空字段的机制。默认 lazy=true 优先读取已存记录，false 刷新该来源。文本和分类只在响应中清洗，保留原始数据库记录。",
         "security": [
           {
             "BearerToken": []
@@ -1088,7 +1087,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "必填，使用所选搜索结果的 provider（本例 JAV321）。详情接口不能省略，也不支持 all。",
+            "description": "必填，使用所选搜索结果的 provider。详情接口不能省略，也不支持 all。",
             "example": "JAV321"
           },
           {
@@ -1099,7 +1098,7 @@
               "type": "string"
             },
             "description": "必填，使用同一搜索结果的 id；它是该来源内部的条目 ID，不一定等于番号。放入路径时需 URL 编码。",
-            "example": "h_1092arbb00014"
+            "example": "mida00798"
           },
           {
             "name": "lazy",
@@ -1115,70 +1114,52 @@
         ],
         "responses": {
           "200": {
-            "description": "单一来源的完整详情。label 是厂牌，maker 是制作商，series 是系列，genres 是分类。上游 Jellyfin/Emby 插件将非空的 series、maker、label 分别添加为 Tag，将 genres 写入分类；API 没有独立的 tags 字段。本例 label 为空仍可有 Tag。",
+            "description": "单一来源的完整详情。label 是厂牌，maker 是制作商，series 是系列，genres 是分类。上游 Jellyfin/Emby 插件将非空的 series、maker、label 分别添加为 Tag，将 genres 写入分类；API 没有独立的 tags 字段。",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MovieInfoResponse"
                 },
                 "examples": {
-                  "arbb014": {
-                    "summary": "ARBB-014",
-                    "description": "仅文档示例隐藏部分露骨内容与色情媒体地址；接口返回不受影响。",
+                  "mida798": {
+                    "summary": "MIDA-798",
                     "value": {
                       "data": {
                         "actors": [
-                          "南梨央奈"
+                          "石川澪"
                         ],
                         "big_cover_url": "",
                         "big_thumb_url": "",
-                        "cover_url": "[已隐藏]",
+                        "cover_url": "http://pics.dmm.co.jp//digital/video/mida00798/mida00798pl.jpg",
                         "director": "",
-                        "genres": [
-                          "[已隐藏]",
-                          "ハイビジョン",
-                          "[已隐藏]",
-                          "単体作品",
-                          "縛り・緊縛",
-                          "[已隐藏]"
-                        ],
-                        "homepage": "[已隐藏]",
-                        "id": "h_1092arbb00014",
+                        "genres": [],
+                        "homepage": "https://www.jav321.com/video/mida00798",
+                        "id": "mida00798",
                         "label": "",
-                        "maker": "＆RiBbON",
-                        "number": "ARBB-014",
+                        "maker": "ムーディーズ",
+                        "number": "MIDA-798",
                         "preview_images": [
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]",
-                          "[已隐藏]"
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-1.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-2.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-3.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-4.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-5.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-6.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-7.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-8.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-9.jpg",
+                          "http://pics.dmm.co.jp/digital/video/mida00798/mida00798jp-10.jpg"
                         ],
                         "preview_video_hls_url": "",
-                        "preview_video_url": "[已隐藏]",
+                        "preview_video_url": "https://cc3001.dmm.co.jp/pv/QDcRAn4K9pXw-nqEDifbCtsoqQPHa3rM1-vZ5yTPvWg1nYJpsiUrFqQwBtt9Ah/mida00798hhb.mp4",
                         "provider": "JAV321",
-                        "release_date": "2016-07-08T00:00:00Z",
-                        "runtime": 144,
-                        "score": 4,
-                        "series": "[已隐藏]",
-                        "summary": "[已隐藏]",
-                        "thumb_url": "[已隐藏]",
-                        "title": "[已隐藏]"
+                        "release_date": "2026-08-28T00:00:00Z",
+                        "runtime": 0,
+                        "score": 0,
+                        "series": "",
+                        "summary": "",
+                        "thumb_url": "http://pics.dmm.co.jp/digital/video/mida00798/mida00798ps.jpg",
+                        "title": "ここを責められると感じちゃう女体・性感帯図鑑 全部、まるはだか全裸わいせつセクハラ健康診断 石川澪"
                       }
                     }
                   }
