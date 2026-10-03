@@ -109,11 +109,9 @@ make build
 make test
 ```
 
-测试覆盖真实 SDK + SQLite、Token、响应清洗、数据库原文保留、PNG 下载到 WebP 输出、缓存命中、并发合并、LRU/TTL、参数拒绝、错误不缓存、ETag、超时、请求并发上限和图片大小限制。测试图片来自本地 HTTP 服务，不依赖外部网站。SDK 的 provider 集成测试依赖真实站点；这些测试不会在普通服务 CI 中执行。
+代理开发从 [AGENTS.md](AGENTS.md) 开始；面向 GPT-6 Astra 的任务组织、续接和当前验证缺口见 [harness 文档](docs/harness.md)。
 
-覆盖率、容器端到端测试及复现命令见 [docs/testing.md](docs/testing.md)。
-
-原生 libwebp、分辨率加权队列和 Heroku Eco 实测结果见 [docs/native-webp-testing.md](docs/native-webp-testing.md)。
+按改动选择检查及复现命令见 [测试文档](docs/testing.md)。普通服务测试使用本地夹具，外站集成测试单独执行；原生 WebP 与 Heroku Eco 的历史性能记录见 [压测文档](docs/native-webp-testing.md)。
 
 ## 许可证
 
