@@ -50,7 +50,11 @@ func (c *capture) Write(b []byte) (int, error) {
 }
 func errorResponse(code int, message string) response {
 	b, _ := json.Marshal(map[string]any{"error": map[string]any{"code": code, "message": message}})
-	return response{code, http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "Cache-Control": []string{"no-store"}}, b}
+	header := http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "Cache-Control": []string{"no-store"}}
+	if code == http.StatusServiceUnavailable {
+		header.Set("Retry-After", "1")
+	}
+	return response{code, header, b}
 }
 
 type Gateway struct {
@@ -60,6 +64,10 @@ type Gateway struct {
 	images        map[string]*imageWork
 	imageJobs     chan struct{}
 	budget        *imageutil.Budget
+	metadataMu    sync.Mutex
+	metadata      map[metadataKey]*metadataWork
+	metadataJobs  chan struct{}
+	waiters       chan struct{}
 	slots         chan struct{}
 	config        Config
 	excluded      map[string]bool
@@ -77,7 +85,10 @@ func NewGateway(next http.Handler, c Config, checkImage func(*http.Request) erro
 	if c.ImagePixelBudget == 0 {
 		c.ImagePixelBudget = 6_000_000
 	}
-	return &Gateway{images: make(map[string]*imageWork), imageJobs: make(chan struct{}, c.MaxConcurrent+c.ImageQueueSize), budget: imageutil.NewBudget(c.ImagePixelBudget), next: next, cache: newImageCache(c.CacheBytes, c.CacheTTL), slots: make(chan struct{}, c.MaxConcurrent), config: c, excluded: excluded, validateImage: checkImage, ready: ready}
+	if c.MaxWaitingRequests == 0 {
+		c.MaxWaitingRequests = 128
+	}
+	return &Gateway{images: make(map[string]*imageWork), imageJobs: make(chan struct{}, c.MaxConcurrent+c.ImageQueueSize), budget: imageutil.NewBudget(c.ImagePixelBudget), metadata: make(map[metadataKey]*metadataWork), metadataJobs: make(chan struct{}, c.MaxConcurrent+c.MetadataQueueSize), waiters: make(chan struct{}, c.MaxWaitingRequests), next: next, cache: newImageCache(c.CacheBytes, c.CacheTTL), slots: make(chan struct{}, c.MaxConcurrent), config: c, excluded: excluded, validateImage: checkImage, ready: ready}
 }
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -142,6 +153,17 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if r.Context().Err() != nil {
+		return
+	}
+	// Bound clients waiting on shared work as well as distinct SDK jobs.
+	select {
+	case g.waiters <- struct{}{}:
+		defer func() { <-g.waiters }()
+	default:
+		writeResponse(w, r, errorResponse(503, "too many waiting requests; retry later"))
+		return
+	}
 	if image {
 		work := g.startImage(key, r)
 		if work == nil {
@@ -164,16 +186,17 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	request := r.Clone(context.WithoutCancel(r.Context()))
-	request.Method = "GET"
-	result := make(chan response, 1)
-	go func() { result <- g.compute(request, false) }()
-	timer := time.NewTimer(g.config.RequestTimeout)
-	defer timer.Stop()
+	metadataKey := metadataKey{url: key, authorization: sha256.Sum256([]byte(r.Header.Get("Authorization")))}
+	work := g.startMetadata(metadataKey, r)
+	if work == nil {
+		writeResponse(w, r, errorResponse(503, "metadata queue full; retry later"))
+		return
+	}
+	defer g.leaveMetadata(metadataKey, work)
 	select {
-	case v := <-result:
-		writeResponse(w, r, v)
-	case <-timer.C:
+	case <-work.done:
+		writeResponse(w, r, work.value)
+	case <-work.ctx.Done():
 		writeResponse(w, r, errorResponse(504, "upstream request timed out"))
 	case <-r.Context().Done():
 		return
@@ -181,29 +204,22 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *Gateway) compute(r *http.Request, image bool) (out response) {
+	if r.Context().Err() != nil {
+		return errorResponse(504, "upstream request timed out")
+	}
+	select {
+	case g.slots <- struct{}{}:
+		defer func() { <-g.slots }()
+	case <-r.Context().Done():
+		return errorResponse(504, "upstream request timed out")
+	}
+	if r.Context().Err() != nil {
+		return errorResponse(504, "upstream request timed out")
+	}
 	if image {
-		if r.Context().Err() != nil {
-			return errorResponse(504, "image request timed out")
-		}
-		select {
-		case g.slots <- struct{}{}:
-			defer func() { <-g.slots }()
-		case <-r.Context().Done():
-			return errorResponse(504, "image request timed out")
-		}
-		if r.Context().Err() != nil {
-			return errorResponse(504, "image request timed out")
-		}
 		ctx, release := g.budget.Scope(r.Context())
 		defer release()
 		r = r.WithContext(ctx)
-	} else {
-		select {
-		case g.slots <- struct{}{}:
-			defer func() { <-g.slots }()
-		default:
-			return errorResponse(503, "server busy; retry later")
-		}
 	}
 
 	defer func() {
@@ -218,8 +234,8 @@ func (g *Gateway) compute(r *http.Request, image bool) (out response) {
 	}
 	c := &capture{header: make(http.Header)}
 	g.next.ServeHTTP(c, r)
-	if image && r.Context().Err() != nil {
-		return errorResponse(504, "image request timed out")
+	if r.Context().Err() != nil {
+		return errorResponse(504, "upstream request timed out")
 	}
 	if c.overflow {
 		return errorResponse(502, "upstream response exceeds size limit")

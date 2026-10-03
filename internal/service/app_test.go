@@ -70,7 +70,7 @@ func TestRealSDKSQLiteAndAuthentication(t *testing.T) {
 	}
 }
 func TestConfigValidationAndEmptyExclusions(t *testing.T) {
-	for _, k := range []string{"DATA_DIR", "DSN", "DATABASE_URL", "TOKEN", "PORT", "BIND", "IMAGE_CACHE_TTL", "REQUEST_TIMEOUT", "IMAGE_CACHE_MB", "MAX_CONCURRENT"} {
+	for _, k := range []string{"DATA_DIR", "DSN", "DATABASE_URL", "TOKEN", "PORT", "BIND", "IMAGE_CACHE_TTL", "REQUEST_TIMEOUT", "IMAGE_CACHE_MB", "MAX_CONCURRENT", "MAX_WAITING_REQUESTS", "METADATA_QUEUE_SIZE"} {
 		t.Setenv(k, "")
 	}
 	t.Setenv("EXCLUDED_GENRES", "")

@@ -14,7 +14,7 @@ import (
 )
 
 func testConfig() Config {
-	return Config{CacheBytes: 1 << 20, CacheTTL: time.Hour, RequestTimeout: time.Second, MaxConcurrent: 4, ImageQueueSize: 16, ImagePixelBudget: 6_000_000, ExcludedGenres: strings.Split(DefaultExcludedGenres, ",")}
+	return Config{CacheBytes: 1 << 20, CacheTTL: time.Hour, RequestTimeout: time.Second, MaxConcurrent: 4, MaxWaitingRequests: 128, MetadataQueueSize: 16, ImageQueueSize: 16, ImagePixelBudget: 6_000_000, ExcludedGenres: strings.Split(DefaultExcludedGenres, ",")}
 }
 func request(h http.Handler, path string) *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
@@ -150,6 +150,7 @@ func TestTimeoutAndConcurrencyBound(t *testing.T) {
 	release := make(chan struct{})
 	cfg := testConfig()
 	cfg.MaxConcurrent = 1
+	cfg.MetadataQueueSize = 0
 	cfg.RequestTimeout = 20 * time.Millisecond
 	g := NewGateway(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { close(started); <-release; fmt.Fprint(w, `{"data":{}}`) }), cfg, nil, nil)
 	done := make(chan *httptest.ResponseRecorder, 1)

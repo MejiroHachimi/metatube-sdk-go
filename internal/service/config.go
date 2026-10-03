@@ -17,12 +17,14 @@ type Config struct {
 	CacheBytes                   int64
 	CacheTTL, RequestTimeout     time.Duration
 	MaxConcurrent                int
+	MaxWaitingRequests           int
+	MetadataQueueSize            int
 	ImageQueueSize               int
 	ImagePixelBudget             int64
 }
 
 func LoadConfig() (Config, error) {
-	c := Config{DataDir: "./data", CacheBytes: 64 << 20, CacheTTL: 24 * time.Hour, RequestTimeout: 25 * time.Second, MaxConcurrent: 4, ImageQueueSize: 16, ImagePixelBudget: 6_000_000}
+	c := Config{DataDir: "./data", CacheBytes: 64 << 20, CacheTTL: 24 * time.Hour, RequestTimeout: 25 * time.Second, MaxConcurrent: 4, MaxWaitingRequests: 128, MetadataQueueSize: 16, ImageQueueSize: 16, ImagePixelBudget: 6_000_000}
 	if v := os.Getenv("DATA_DIR"); v != "" {
 		c.DataDir = v
 	}
@@ -70,6 +72,20 @@ func LoadConfig() (Config, error) {
 			return c, fmt.Errorf("MAX_CONCURRENT must be between 1 and 64")
 		}
 		c.MaxConcurrent = n
+	}
+	if v := os.Getenv("MAX_WAITING_REQUESTS"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > 4096 {
+			return c, fmt.Errorf("MAX_WAITING_REQUESTS must be between 1 and 4096")
+		}
+		c.MaxWaitingRequests = n
+	}
+	if v := os.Getenv("METADATA_QUEUE_SIZE"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 0 || n > 64 {
+			return c, fmt.Errorf("METADATA_QUEUE_SIZE must be between 0 and 64")
+		}
+		c.MetadataQueueSize = n
 	}
 	if v := os.Getenv("IMAGE_PIXEL_BUDGET"); v != "" {
 		n, err := strconv.ParseInt(v, 10, 64)

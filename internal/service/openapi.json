@@ -154,10 +154,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -316,10 +321,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -478,10 +488,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -674,10 +689,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -840,10 +860,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1045,10 +1070,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1277,10 +1307,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1443,10 +1478,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1609,10 +1649,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1785,10 +1830,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1995,10 +2045,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2206,10 +2261,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2419,10 +2479,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2630,10 +2695,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -2843,10 +2913,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -3054,10 +3129,15 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/RetryAfter"
+              }
             }
           },
           "504": {
-            "description": "Upstream request timed out",
+            "description": "等待或执行超过 REQUEST_TIMEOUT。排队时间计入时限；底层任务实际结束后才释放运行名额。",
             "content": {
               "application/json": {
                 "schema": {
@@ -3814,6 +3894,16 @@
           "data"
         ],
         "additionalProperties": false
+      }
+    },
+    "headers": {
+      "RetryAfter": {
+        "description": "建议等待的秒数；客户端应配合有限次数的退避重试。",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "example": 1
       }
     }
   },

@@ -27,7 +27,7 @@ type token string
 func (t token) Valid(s string) bool { return subtle.ConstantTimeCompare([]byte(t), []byte(s)) == 1 }
 
 func Open(c Config) (http.Handler, func() error, error) {
-	if c.ImageQueueSize < 0 || c.ImageQueueSize > 64 || c.ImagePixelBudget < 0 || c.MaxConcurrent < 1 || c.RequestTimeout <= 0 || c.CacheTTL <= 0 || c.CacheBytes < 0 {
+	if c.ImageQueueSize < 0 || c.ImageQueueSize > 64 || c.MetadataQueueSize < 0 || c.MetadataQueueSize > 64 || c.ImagePixelBudget < 0 || c.MaxConcurrent < 1 || c.MaxWaitingRequests < 0 || c.MaxWaitingRequests > 4096 || c.RequestTimeout <= 0 || c.CacheTTL <= 0 || c.CacheBytes < 0 {
 		return nil, nil, fmt.Errorf("invalid service configuration")
 	}
 	if c.DSN == "" {

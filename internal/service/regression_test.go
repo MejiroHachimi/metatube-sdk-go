@@ -17,7 +17,7 @@ import (
 
 func clearConfig(t *testing.T) {
 	t.Helper()
-	for _, key := range []string{"DATA_DIR", "DSN", "DATABASE_URL", "TOKEN", "PORT", "BIND", "IMAGE_CACHE_TTL", "REQUEST_TIMEOUT", "IMAGE_CACHE_MB", "MAX_CONCURRENT", "IMAGE_QUEUE_SIZE", "IMAGE_PIXEL_BUDGET"} {
+	for _, key := range []string{"DATA_DIR", "DSN", "DATABASE_URL", "TOKEN", "PORT", "BIND", "IMAGE_CACHE_TTL", "REQUEST_TIMEOUT", "IMAGE_CACHE_MB", "MAX_CONCURRENT", "MAX_WAITING_REQUESTS", "METADATA_QUEUE_SIZE", "IMAGE_QUEUE_SIZE", "IMAGE_PIXEL_BUDGET"} {
 		t.Setenv(key, "")
 	}
 }
@@ -32,12 +32,16 @@ func TestConfigDefaultsOverridesAndInvalidValues(t *testing.T) {
 	require.Equal(t, int64(64<<20), cfg.CacheBytes)
 	require.Equal(t, int64(6_000_000), cfg.ImagePixelBudget)
 	require.Equal(t, 16, cfg.ImageQueueSize)
+	require.Equal(t, 16, cfg.MetadataQueueSize)
+	require.Equal(t, 128, cfg.MaxWaitingRequests)
 	require.Contains(t, cfg.ExcludedGenres, "1080p")
 	for _, tc := range []struct{ key, value string }{
 		{"PORT", "0"}, {"PORT", "abc"}, {"IMAGE_CACHE_MB", "1025"}, {"IMAGE_CACHE_MB", "abc"},
 		{"IMAGE_CACHE_TTL", "0s"}, {"IMAGE_CACHE_TTL", "721h"}, {"REQUEST_TIMEOUT", "invalid"},
 		{"MAX_CONCURRENT", "0"}, {"MAX_CONCURRENT", "65"}, {"MAX_CONCURRENT", "abc"},
 		{"DATABASE_URL", "postgres://private/db"},
+		{"MAX_WAITING_REQUESTS", "0"}, {"MAX_WAITING_REQUESTS", "4097"}, {"MAX_WAITING_REQUESTS", "abc"},
+		{"METADATA_QUEUE_SIZE", "-1"}, {"METADATA_QUEUE_SIZE", "65"}, {"METADATA_QUEUE_SIZE", "abc"},
 		{"IMAGE_QUEUE_SIZE", "-1"}, {"IMAGE_QUEUE_SIZE", "65"}, {"IMAGE_PIXEL_BUDGET", "0"}, {"IMAGE_PIXEL_BUDGET", "20000001"},
 	} {
 		t.Run(tc.key+tc.value, func(t *testing.T) {
@@ -47,7 +51,7 @@ func TestConfigDefaultsOverridesAndInvalidValues(t *testing.T) {
 			require.NotContains(t, err.Error(), "private")
 		})
 	}
-	for k, v := range map[string]string{"DATA_DIR": "/tmp/metatube", "DSN": "file:test.db", "BIND": "127.0.0.1", "PORT": "9090", "TOKEN": "example", "IMAGE_CACHE_MB": "0", "IMAGE_CACHE_TTL": "2h", "REQUEST_TIMEOUT": "3s", "MAX_CONCURRENT": "2", "IMAGE_QUEUE_SIZE": "8", "IMAGE_PIXEL_BUDGET": "5000000", "EXCLUDED_GENRES": "4K,720p"} {
+	for k, v := range map[string]string{"DATA_DIR": "/tmp/metatube", "DSN": "file:test.db", "BIND": "127.0.0.1", "PORT": "9090", "TOKEN": "example", "IMAGE_CACHE_MB": "0", "IMAGE_CACHE_TTL": "2h", "REQUEST_TIMEOUT": "3s", "MAX_CONCURRENT": "2", "MAX_WAITING_REQUESTS": "32", "METADATA_QUEUE_SIZE": "0", "IMAGE_QUEUE_SIZE": "8", "IMAGE_PIXEL_BUDGET": "5000000", "EXCLUDED_GENRES": "4K,720p"} {
 		t.Setenv(k, v)
 	}
 	cfg, err = LoadConfig()
@@ -60,6 +64,8 @@ func TestConfigDefaultsOverridesAndInvalidValues(t *testing.T) {
 	require.Equal(t, 2*time.Hour, cfg.CacheTTL)
 	require.Equal(t, 3*time.Second, cfg.RequestTimeout)
 	require.Equal(t, 2, cfg.MaxConcurrent)
+	require.Equal(t, 32, cfg.MaxWaitingRequests)
+	require.Zero(t, cfg.MetadataQueueSize)
 	require.Equal(t, 8, cfg.ImageQueueSize)
 	require.Equal(t, int64(5_000_000), cfg.ImagePixelBudget)
 	require.Equal(t, []string{"4K", "720p"}, cfg.ExcludedGenres)

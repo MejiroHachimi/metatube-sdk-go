@@ -61,3 +61,18 @@ for label, kinds, expected in [
     assert fetch("/readyz")["status"] == 200
     print(json.dumps({"case":label,"seconds":round(time.monotonic()-start,3),
                       "results":results}), flush=True)
+
+# Exercise the single-user batch-refresh workload with seeded SQLite records.
+# These paths never ask an external provider for metadata.
+for label, paths in [
+    ("metadata-16", [f"/v1/movies/FANZA/small{i:05d}" for i in range(16)]),
+    ("metadata-and-images-16", [f"/v1/movies/FANZA/medium{i:05d}" for i in range(8)]
+     + [f"/v1/images/primary/FANZA/small{i:05d}?pos=0.25" for i in range(8)]),
+]:
+    start = time.monotonic()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
+        results = list(pool.map(fetch, paths))
+    assert all(item["status"] == 200 for item in results), results
+    assert fetch("/readyz")["status"] == 200
+    print(json.dumps({"case": label, "seconds": round(time.monotonic()-start, 3),
+                      "results": results}), flush=True)
