@@ -868,7 +868,7 @@
       "get": {
         "operationId": "v1_movies_search",
         "summary": "搜索影片",
-        "description": "输入 arbb014，不限定 provider，fallback=false。实测返回 JAV321 / h_1092arbb00014（ARBB-014），用这两个值请求影片详情。无匹配返回 404；不提供分页。结果取决于上游来源可用性。",
+        "description": "按番号或关键词搜索。省略 provider 即并行搜索所有已启用的影片来源，汇总成功结果；同一番号在不同来源中可有多条记录，按匹配度和来源优先级排序，不合并详情字段。\n\n示例：`GET /v1/movies/search?q=arbb014&fallback=false`。这次实测只有 JAV321 返回匹配项，并不代表只查询了 JAV321。结果随来源可用性变化；无匹配返回 404，不提供分页。q 为条目 URL 时只读取该 URL 对应来源。",
         "security": [
           {
             "BearerToken": []
@@ -883,7 +883,7 @@
               "type": "string",
               "minLength": 1
             },
-            "description": "Search term or a supported provider item URL.",
+            "description": "番号、关键词或支持的数据源条目 URL；URL 查询只读取对应来源。",
             "example": "arbb014"
           },
           {
@@ -897,13 +897,13 @@
               "type": "boolean",
               "default": true
             },
-            "description": "Include cached database results when supported.",
+            "description": "默认 true，允许用数据库中的已有结果补充搜索结果；不是跨来源补齐详情字段。",
             "example": false
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "候选列表（精简字段），不含 maker、label、genres 等详情字段。用所选项的 provider 和 id 请求影片详情。",
             "content": {
               "application/json": {
                 "schema": {
@@ -912,7 +912,7 @@
                 "examples": {
                   "arbb014": {
                     "summary": "arbb014 实测 · 字段摘录",
-                    "description": "2026-10-03 实测 HTTP 200；仅展示接入所需字段，原值未改动。完整字段见 Schema。",
+                    "description": "2026-10-03 未传 provider、fallback=false 的实测 HTTP 200；当次仅返回一个 JAV321 候选。以下为字段摘录，原值未改动；完整搜索字段见 Schema。",
                     "value": {
                       "data": [
                         {
@@ -1070,7 +1070,7 @@
       "get": {
         "operationId": "v1_movies__provider___id",
         "summary": "影片详情",
-        "description": "示例使用搜索返回的 JAV321 / h_1092arbb00014，lazy=false 刷新上游。默认 lazy=true 优先读取已存记录。文本和分类只在响应中清洗，保留原始数据库记录。",
+        "description": "读取指定来源的完整影片详情，provider 和 id 均必填，使用搜索结果中的对应值。当前没有跨来源合并或自动补齐空字段的机制；需要比较多来源时，分别请求各候选的详情。\n\n示例：`GET /v1/movies/JAV321/h_1092arbb00014?lazy=false`。默认 lazy=true 优先读取已存记录，false 刷新该来源。文本和分类只在响应中清洗，保留原始数据库记录。",
         "security": [
           {
             "BearerToken": []
@@ -1084,7 +1084,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Provider identifier from /v1/providers.",
+            "description": "必填，使用所选搜索结果的 provider（本例 JAV321）。详情接口不能省略，也不支持 all。",
             "example": "JAV321"
           },
           {
@@ -1094,7 +1094,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Provider-specific item ID; URL-encode the value.",
+            "description": "必填，使用同一搜索结果的 id；它是该来源内部的条目 ID，不一定等于番号。放入路径时需 URL 编码。",
             "example": "h_1092arbb00014"
           },
           {
@@ -1111,7 +1111,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "单一来源的完整详情。label 是厂牌，maker 是制作商，genres 是分类标签；来源或适配器未提供的字段可能为空。本例 JAV321 适配器未提取 label，因此实际返回空字符串。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1120,7 +1120,7 @@
                 "examples": {
                   "arbb014": {
                     "summary": "arbb014 实测 · 字段摘录",
-                    "description": "2026-10-03 实测 HTTP 200；仅展示接入所需字段，原值未改动。完整字段见 Schema。",
+                    "description": "2026-10-03 实测 HTTP 200 的字段摘录，原值未改动。maker 为 ＆RiBbON；label 和 director 均为空，当前 JAV321 适配器未提取这两个字段。genres 等其余字段未在此摘录中展示，完整字段见 Schema。",
                     "value": {
                       "data": {
                         "id": "h_1092arbb00014",
@@ -3158,7 +3158,7 @@
         "schema": {
           "type": "string"
         },
-        "description": "Limit search to one provider. Omit to search all providers."
+        "description": "可选的数据源标识，见 /v1/providers。关键词搜索时留空会并行查询所有已启用的对应类型来源；填写则仅查询该来源。各条结果保留自己的 provider 和 id，不合并不同来源的详情字段。q 为条目 URL 时按 URL 识别来源。"
       },
       "Fallback": {
         "name": "fallback",
@@ -3168,7 +3168,7 @@
           "type": "boolean",
           "default": true
         },
-        "description": "Include cached database results when supported."
+        "description": "默认 true，允许用数据库中的已有结果补充搜索结果；不是跨来源补齐详情字段。"
       },
       "URL": {
         "name": "url",
@@ -3253,7 +3253,8 @@
             "type": "string"
           },
           "provider": {
-            "type": "string"
+            "type": "string",
+            "description": "此条详情的数据来源；所有字段属于该来源的记录。"
           },
           "homepage": {
             "type": "string"
@@ -3292,10 +3293,12 @@
             }
           },
           "maker": {
-            "type": "string"
+            "type": "string",
+            "description": "制作商，与 label（厂牌）分别返回。"
           },
           "label": {
-            "type": "string"
+            "type": "string",
+            "description": "厂牌（发行品牌），不是分类标签。来源或适配器未提供时为空字符串；不会自动取 maker 或其他来源的值。"
           },
           "series": {
             "type": "string"
@@ -3304,7 +3307,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "分类标签；响应时会进行分类清洗。不同来源提供的分类可能不同。"
           },
           "score": {
             "type": "number"
@@ -3341,7 +3345,8 @@
           "runtime",
           "release_date"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "指定 provider 的影片详情，不自动合并其他来源的字段。字段存在不代表该来源一定提供了值。"
       },
       "MovieSearchResult": {
         "type": "object",
@@ -3356,7 +3361,8 @@
             "type": "string"
           },
           "provider": {
-            "type": "string"
+            "type": "string",
+            "description": "此候选的数据来源；读取详情时与同一候选的 id 一起使用。"
           },
           "homepage": {
             "type": "string"
@@ -3392,7 +3398,8 @@
           "score",
           "release_date"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "搜索候选的精简字段；不包含 maker、label、genres 等详情字段。用 provider 和 id 读取 MovieInfo。"
       },
       "MovieReviewDetail": {
         "type": "object",
