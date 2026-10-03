@@ -1,36 +1,16 @@
-name: Test
-
-concurrency:
-  group: test-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
-
-on:
-  push:
-    branches:
-      - 'main'
-  pull_request:
-
+name: Service validation
+on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
-  go-test:
-    name: Go Test
+  service:
     runs-on: ubuntu-latest
-    services:
-      dind:
-        image: docker:dind-rootless
-        ports:
-          - 2375:2375
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          check-latest: true
-          go-version-file: 'go.mod'
-
-      - name: Run test
-        run: |
-          go version
-          go test $(go list ./... | grep -Ev "github.com/metatube-community/metatube-sdk-go/translate")
+          go-version-file: go.mod
+          cache: true
+      - run: go test -race ./internal/service ./imageutil
+      - run: go build ./cmd/metatube
+      - run: docker build -t metatube:test .

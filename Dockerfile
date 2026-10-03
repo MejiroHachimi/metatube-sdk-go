@@ -1,29 +1,22 @@
-FROM golang:alpine AS builder
-
+FROM golang:1.26.8-alpine AS build
 WORKDIR /src
-COPY . /src
+ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOMAXPROCS=4 GOFLAGS="-mod=readonly -p=4"
+COPY go.mod go.sum ./
+ARG BUILD_EXTRA_CA
+RUN if [ -n "$BUILD_EXTRA_CA" ]; then \
+      cp /etc/ssl/certs/ca-certificates.crt /tmp/build-ca.pem; \
+      printf '%s' "$BUILD_EXTRA_CA" | base64 -d >> /tmp/build-ca.pem; \
+      export SSL_CERT_FILE=/tmp/build-ca.pem; \
+    fi; \
+    go mod download && rm -f /tmp/build-ca.pem
+COPY . .
+RUN go build -trimpath -ldflags="-s -w -X github.com/metatube-community/metatube-sdk-go/internal/version.Version=0.1.0" -o /out/metatube ./cmd/metatube
 
-RUN apk add --update --no-cache --no-progress make git \
-    && make server
-
-FROM alpine:latest
-LABEL org.opencontainers.image.licenses=Apache-2.0
-LABEL org.opencontainers.image.source="https://github.com/metatube-community/metatube-sdk-go"
-
-COPY --from=builder /src/build/metatube-server .
-
-RUN apk add --update --no-cache --no-progress ca-certificates tzdata
-
-ENV GIN_MODE=release
-ENV PORT=8080
-ENV TOKEN=""
-ENV DSN=""
-ENV REQUEST_TIMEOUT=""
-ENV DB_MAX_IDLE_CONNS=0
-ENV DB_MAX_OPEN_CONNS=0
-ENV DB_PREPARED_STMT=0
-ENV DB_AUTO_MIGRATE=0
-
+FROM alpine:3.22
+RUN mkdir -p /data && chown 10001:10001 /data
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=build /out/metatube /usr/local/bin/metatube
+USER 10001:10001
+ENV PORT=8080 DATA_DIR=/data GIN_MODE=release
 EXPOSE 8080
-
-ENTRYPOINT ["/metatube-server"]
+ENTRYPOINT ["/usr/local/bin/metatube"]

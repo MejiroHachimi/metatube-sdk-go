@@ -26,3 +26,7 @@ go.work.sum
 
 # Build files
 build/
+
+# Standalone service runtime
+/data/
+/metatube

@@ -1,0 +1,3566 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MetaTube Server",
+    "version": "0.1.0",
+    "description": "Self-contained MetaTube service. Successful JSON responses contain data only; failures contain error only. All inputs use UTF-8. Duplicate or unknown query parameters are rejected. Genre cleanup is response-only. Configure TOKEN for metadata authentication; an unset TOKEN permits access for zero-configuration local use. Images, health and documentation are public. Translation, module-debug listing and redirect shortcuts are deliberately not exposed in this first release. Third-party site availability is not guaranteed.",
+    "license": {
+      "name": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "",
+        "summary": "Service identity",
+        "description": "",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "healthz",
+        "summary": "Liveness",
+        "description": "Checks that the HTTP service is running; does not check external providers.",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "readyz",
+        "summary": "Database readiness",
+        "description": "Pings the database with a two-second deadline; returns 503 if unavailable.",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/providers": {
+      "get": {
+        "operationId": "v1_providers",
+        "summary": "List enabled providers",
+        "description": "",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvidersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/db/version": {
+      "get": {
+        "operationId": "v1_db_version",
+        "summary": "Database engine version",
+        "description": "",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseVersionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/movies/search": {
+      "get": {
+        "operationId": "v1_movies_search",
+        "summary": "Search movies",
+        "description": "No results returns 404 for Jellyfin compatibility. No pagination. Results are provider-dependent; external websites may reject cloud IP addresses.",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Q"
+          },
+          {
+            "$ref": "#/components/parameters/SearchProvider"
+          },
+          {
+            "$ref": "#/components/parameters/Fallback"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieSearchResultListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/movies/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_movies__provider___id",
+        "summary": "Get movie metadata",
+        "description": "Text is plain text, list fields are deduplicated and blank entries removed. Movie genres matching EXCLUDED_GENRES are excluded using case-insensitive whole-label matching. Raw stored metadata is preserved.",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/Lazy"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/actors/search": {
+      "get": {
+        "operationId": "v1_actors_search",
+        "summary": "Search actors",
+        "description": "No results returns 404 for Jellyfin compatibility. No pagination. Results are provider-dependent; external websites may reject cloud IP addresses.",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Q"
+          },
+          {
+            "$ref": "#/components/parameters/SearchProvider"
+          },
+          {
+            "$ref": "#/components/parameters/Fallback"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActorSearchResultListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/actors/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_actors__provider___id",
+        "summary": "Get actor metadata",
+        "description": "Text is plain text, list fields are deduplicated and blank entries removed. Movie genres matching EXCLUDED_GENRES are excluded using case-insensitive whole-label matching. Raw stored metadata is preserved.",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/Lazy"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActorInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_reviews__provider___id",
+        "summary": "Get movie reviews",
+        "description": "",
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/Lazy"
+          },
+          {
+            "name": "homepage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Optional supported provider page URL, used instead of the ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieReviewDetailListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/images/primary/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_images_primary__provider___id",
+        "summary": "Get primary image",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      },
+      "head": {
+        "operationId": "v1_images_primary__provider___id_head",
+        "summary": "Image headers without response body",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      }
+    },
+    "/v1/images/thumb/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_images_thumb__provider___id",
+        "summary": "Get thumb image",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      },
+      "head": {
+        "operationId": "v1_images_thumb__provider___id_head",
+        "summary": "Image headers without response body",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      }
+    },
+    "/v1/images/backdrop/{provider}/{id}": {
+      "get": {
+        "operationId": "v1_images_backdrop__provider___id",
+        "summary": "Get backdrop image",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      },
+      "head": {
+        "operationId": "v1_images_backdrop__provider___id_head",
+        "summary": "Image headers without response body",
+        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Provider"
+          },
+          {
+            "$ref": "#/components/parameters/ID"
+          },
+          {
+            "$ref": "#/components/parameters/URL"
+          },
+          {
+            "$ref": "#/components/parameters/Ratio"
+          },
+          {
+            "$ref": "#/components/parameters/Position"
+          },
+          {
+            "$ref": "#/components/parameters/Auto"
+          },
+          {
+            "$ref": "#/components/parameters/Badge"
+          },
+          {
+            "$ref": "#/components/parameters/Quality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processed JPEG",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "SHA-256 of encoded image"
+              },
+              "X-Cache": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "HIT or MISS (concurrent coalesced requests may show MISS)"
+              },
+              "X-MetaTube-Image-Width": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output width in pixels"
+              },
+              "X-MetaTube-Image-Height": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Output height in pixels"
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Public image caching policy"
+              }
+            },
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 400,
+                    "message": "Invalid request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 404,
+                    "message": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 405,
+                    "message": "Method not allowed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal or upstream failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 500,
+                    "message": "Internal or upstream failure"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 502,
+                    "message": "Invalid upstream response"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Server busy or database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 503,
+                    "message": "Server busy or database unavailable"
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": 504,
+                    "message": "Upstream request timed out"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Image unchanged; no response body"
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "operationId": "openapi",
+        "summary": "OpenAPI document",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "This specification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs": {
+      "get": {
+        "operationId": "docs",
+        "summary": "Self-hosted interactive API reference",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HTML documentation; no external CDN needed",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Matches TOKEN when configured. Do not put credentials in query parameters."
+      }
+    },
+    "parameters": {
+      "Provider": {
+        "name": "provider",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Provider identifier from /v1/providers.",
+        "example": "FANZA"
+      },
+      "ID": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Provider-specific item ID; URL-encode the value.",
+        "example": "example001"
+      },
+      "Lazy": {
+        "name": "lazy",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": true
+        },
+        "description": "Read stored metadata first; false refreshes the upstream metadata. Genre cleanup applies in both cases."
+      },
+      "Q": {
+        "name": "q",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": "Search term or a supported provider item URL.",
+        "example": "EXAMPLE-001"
+      },
+      "SearchProvider": {
+        "name": "provider",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Limit search to one provider. Omit to search all providers."
+      },
+      "Fallback": {
+        "name": "fallback",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": true
+        },
+        "description": "Include cached database results when supported."
+      },
+      "URL": {
+        "name": "url",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Optional image URL. Must exactly match an image URL in this item metadata; arbitrary proxy URLs are rejected."
+      },
+      "Ratio": {
+        "name": "ratio",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "default": -1
+        },
+        "description": "-1 uses default crop; otherwise 0.1–10. Only primary images use a custom ratio."
+      },
+      "Position": {
+        "name": "pos",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "default": -1
+        },
+        "description": "-1 selects the default/automatic crop, otherwise 0–1."
+      },
+      "Auto": {
+        "name": "auto",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": false
+        },
+        "description": "Automatic face detection for an explicitly selected image URL."
+      },
+      "Badge": {
+        "name": "badge",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "zimu.png",
+            "u.png",
+            "uc.png"
+          ]
+        },
+        "description": "Optional bundled badge. Remote badge URLs are unsupported."
+      },
+      "Quality": {
+        "name": "quality",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 90
+        },
+        "description": "JPEG quality; part of the cache key."
+      }
+    },
+    "schemas": {
+      "MovieInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "director": {
+            "type": "string"
+          },
+          "actors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumb_url": {
+            "type": "string"
+          },
+          "big_thumb_url": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "big_cover_url": {
+            "type": "string"
+          },
+          "preview_video_url": {
+            "type": "string"
+          },
+          "preview_video_hls_url": {
+            "type": "string"
+          },
+          "preview_images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maker": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "series": {
+            "type": "string"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "score": {
+            "type": "number"
+          },
+          "runtime": {
+            "type": "integer"
+          },
+          "release_date": {
+            "type": "string",
+            "description": "ISO 8601 timestamp; zero date can represent unknown."
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title",
+          "summary",
+          "provider",
+          "homepage",
+          "director",
+          "actors",
+          "thumb_url",
+          "big_thumb_url",
+          "cover_url",
+          "big_cover_url",
+          "preview_video_url",
+          "preview_video_hls_url",
+          "preview_images",
+          "maker",
+          "label",
+          "series",
+          "genres",
+          "score",
+          "runtime",
+          "release_date"
+        ],
+        "additionalProperties": false
+      },
+      "MovieSearchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "thumb_url": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "actors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "release_date": {
+            "type": "string",
+            "description": "ISO 8601 timestamp; zero date can represent unknown."
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title",
+          "provider",
+          "homepage",
+          "thumb_url",
+          "cover_url",
+          "score",
+          "release_date"
+        ],
+        "additionalProperties": false
+      },
+      "MovieReviewDetail": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "description": "ISO 8601 timestamp; zero date can represent unknown."
+          }
+        },
+        "required": [
+          "title",
+          "author",
+          "comment",
+          "score",
+          "date"
+        ],
+        "additionalProperties": false
+      },
+      "ActorInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "hobby": {
+            "type": "string"
+          },
+          "skill": {
+            "type": "string"
+          },
+          "blood_type": {
+            "type": "string"
+          },
+          "cup_size": {
+            "type": "string"
+          },
+          "measurements": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "birthday": {
+            "type": "string",
+            "description": "ISO 8601 timestamp; zero date can represent unknown."
+          },
+          "debut_date": {
+            "type": "string",
+            "description": "ISO 8601 timestamp; zero date can represent unknown."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "provider",
+          "homepage",
+          "summary",
+          "hobby",
+          "skill",
+          "blood_type",
+          "cup_size",
+          "measurements",
+          "nationality",
+          "height",
+          "aliases",
+          "images",
+          "birthday",
+          "debut_date"
+        ],
+        "additionalProperties": false
+      },
+      "ActorSearchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "provider",
+          "homepage",
+          "images"
+        ],
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "app",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "Providers": {
+        "type": "object",
+        "properties": {
+          "actor_providers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "movie_providers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "actor_providers",
+          "movie_providers"
+        ],
+        "additionalProperties": false
+      },
+      "DatabaseVersion": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "MovieInfoResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MovieInfo"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "MovieSearchResultResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MovieSearchResult"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "MovieReviewDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MovieReviewDetail"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ActorInfoResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ActorInfo"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ActorSearchResultResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ActorSearchResult"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ServiceResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Service"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ProvidersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Providers"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "DatabaseVersionResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DatabaseVersion"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ActorSearchResultListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActorSearchResult"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "MovieSearchResultListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovieSearchResult"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "MovieReviewDetailListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovieReviewDetail"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

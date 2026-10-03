@@ -1,0 +1,10 @@
+{
+  "name": "MetaTube Server",
+  "description": "Jellyfin-compatible metadata API with clean genres, bounded image caching and self-hosted API docs.",
+  "stack": "container",
+  "success_url": "/docs",
+  "env": {
+    "TOKEN": {"description": "MetaTube API token. Copy this value into the Jellyfin plugin Token setting.", "generator": "secret"},
+    "DATA_DIR": {"description": "Temporary SQLite metadata cache on Heroku. Attach external PostgreSQL for persistence.", "value": "/tmp/metatube"}
+  }
+}
