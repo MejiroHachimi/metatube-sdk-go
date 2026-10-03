@@ -30,3 +30,8 @@ build/
 # Standalone service runtime
 /data/
 /metatube
+
+# Documentation builds
+/site/
+/.venv-docs/
+__pycache__/

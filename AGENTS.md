@@ -14,6 +14,7 @@
 | SQLite | `database/`、`engine/dbengine/` |
 | 数据源 | 对应的 `provider/` 子目录及其测试 |
 | 部署 | [部署文档](docs/deployment.md)、`Dockerfile`、`Dockerfile.heroku`、`heroku.yml` |
+| API / 适配文档站 | `mkdocs.yml`、`docs/api/`、`docs/integrations/`、`scripts/docs_hooks.py` |
 
 表中省略目录的文件与同一单元格内的首个文件同目录。
 
@@ -35,7 +36,7 @@
 
 不要把 `go test ./...` 当默认检查：provider、翻译等集成测试会访问真实外站或需要凭据。新增回归测试应验证可观察行为，优先使用本地 HTTP 夹具和临时 SQLite。
 
-Go 代码修改后对相关文件运行 `gofmt`；交付前检查 `git diff --check`。纯文档修改核对命令、路径、链接即可。测试通过后，除非有新修改或未解决的问题，不重复扩大验证范围。
+Go 代码修改后对相关文件运行 `gofmt`；交付前检查 `git diff --check`。文档站或 OpenAPI 修改按 [文档维护流程](docs/documentation.md) 运行 `mkdocs build --strict`，核对命令、路径和链接，无需重跑后端压测。测试通过后，除非有新修改或未解决的问题，不重复扩大验证范围。
 
 汇报改动、实际执行的检查及结果、未验证的边界。历史覆盖率和压测记录不能作为本次测试结果。构建通过也不能替代运行时、真实抓取或插件验收。
 
@@ -49,4 +50,4 @@ Go 代码修改后对相关文件运行 `gofmt`；交付前检查 `git diff --ch
 
 配置和日志只读取任务所需内容，不输出 Token 或账号凭据。部署按本次任务已授权的目标应用执行；普通代码任务不隐含修改线上实例。已有明确授权时无需重复询问。
 
-上游来源见 [UPSTREAM.md](UPSTREAM.md)，其中的旧 README 仅作历史参考。产品配置以 [README](README.md) 和实际实现为准，不复制多份配置表或额外的模型提示词文件。
+上游来源见 [UPSTREAM.md](UPSTREAM.md)，其中的旧 README 仅作历史参考。产品配置以 [环境变量文档](docs/configuration.md) 和实际实现为准；API 参考从 OpenAPI 生成，不复制多份配置表或额外的模型提示词文件。

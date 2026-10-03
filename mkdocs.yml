@@ -1,0 +1,64 @@
+site_name: MetaTube Server
+site_description: MetaTube 部署、API 与 Jellyfin / Emby 适配文档
+site_url: https://mejirohachimi.github.io/metatube-sdk-go/
+repo_url: https://github.com/MejiroHachimi/metatube-sdk-go
+repo_name: MejiroHachimi/metatube-sdk-go
+edit_uri: edit/main/docs/
+strict: true
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: 切换深色模式
+    - scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: 切换浅色模式
+plugins:
+  - search
+hooks:
+  - scripts/docs_hooks.py
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - toc:
+      permalink: true
+      slugify: !!python/name:markdown.extensions.toc.slugify_unicode
+  - pymdownx.superfences
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    anchors: warn
+exclude_docs: |
+  requirements.txt
+nav:
+  - 首页: index.md
+  - 部署与配置:
+      - Docker / Heroku 部署: deployment.md
+      - 环境变量: configuration.md
+  - API:
+      - 调用指南: api/index.md
+      - 完整接口与模型: api/reference.md
+  - 接入与适配:
+      - Jellyfin / Emby: integrations/jellyfin-emby.md
+      - 数据源适配开发: integrations/providers.md
+  - 开发与维护:
+      - 测试与验证: testing.md
+      - 开发 harness: harness.md
+      - 文档站维护: documentation.md
+      - WebP 性能记录: native-webp-testing.md

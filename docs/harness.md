@@ -8,12 +8,15 @@
 
 | 入口 | 职责 |
 | --- | --- |
-| [AGENTS.md](../AGENTS.md) | 自动加载的短指引：代码地图、兼容约束、验证入口 |
-| [README](../README.md) | 应用定位、用户功能与环境变量 |
+| [AGENTS.md](https://github.com/MejiroHachimi/metatube-sdk-go/blob/main/AGENTS.md) | 自动加载的短指引：代码地图、兼容约束、验证入口 |
+| [README](https://github.com/MejiroHachimi/metatube-sdk-go/blob/main/README.md) | 应用定位、用户功能与文档导航 |
 | [testing.md](testing.md) | 按改动选择验证、可复现命令、覆盖边界 |
 | [deployment.md](deployment.md) | Docker / Heroku 发布与线上验收 |
+| [configuration.md](configuration.md) | 环境变量与资源限制的唯一配置表 |
+| [API](api/index.md) / [适配](integrations/jellyfin-emby.md) | 调用契约、客户端接入与数据源开发 |
+| [documentation.md](documentation.md) | MkDocs 严格构建与 Pages 发布 |
 | [native-webp-testing.md](native-webp-testing.md) | 有日期和条件的性能实验记录 |
-| [test.yml](../.github/workflows/test.yml) | CI 实际执行的检查 |
+| [test.yml](https://github.com/MejiroHachimi/metatube-sdk-go/blob/main/.github/workflows/test.yml) | CI 实际执行的检查 |
 
 行为以代码和可复现测试为依据；文档不一致时同步修正文档。保留一份根 `AGENTS.md`，暂不增加目录级指引、重复的 `CLAUDE.md`、空计划模板或模型专用规则副本。
 
@@ -37,7 +40,7 @@ Codex 的指引发现机制见 [官方 AGENTS.md 文档](https://developers.open
 1. 确认目标、验收条件、已有修改和相关入口。简单修改直接实施；跨层问题先列出短计划和待验证假设。
 2. 做最小完整修改，保留兼容约束。仅并行读取互不依赖的信息；编辑同一文件、迁移和发布按依赖顺序执行。
 3. 用 [测试矩阵](testing.md#按变更选择验证) 检查受影响行为。失败时区分实现缺陷、依赖/工具链问题、外站不可用，不通过跳过断言制造成功结果。
-4. 根据证据修正，再交付 diff、验证结果及剩余边界。新增 API/配置/部署行为同步更新其唯一文档入口；按 [仓库提交约定](../AGENTS.md#提交方式) 直接提交并 push 到 `main`，不默认创建分支或 PR。
+4. 根据证据修正，再交付 diff、验证结果及剩余边界。新增 API/配置/部署行为同步更新其唯一文档入口；按 [仓库提交约定](https://github.com/MejiroHachimi/metatube-sdk-go/blob/main/AGENTS.md#提交方式) 直接提交并 push 到 `main`，不默认创建分支或 PR。
 
 任务要求尽量描述结果，例如：“修复客户端断开后像素额度提前释放的问题；保持其他等待者可继续取得结果；用本地图片夹具验证取消和资源上限。”具体实现由代码与证据决定。
 

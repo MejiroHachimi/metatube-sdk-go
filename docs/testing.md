@@ -6,7 +6,7 @@
 
 | 改动 | 验证 |
 | --- | --- |
-| 仅说明文档 | 核对相对链接、命令和实际配置；`git diff --check`，无需重跑后端压测 |
+| 文档站 / OpenAPI | 按 [文档维护](documentation.md) 运行 `mkdocs build --strict`，核对命令与实际配置；`git diff --check`，无需重跑后端压测 |
 | 服务、认证、清洗、SQLite | `make test`；针对新增或修复行为运行对应回归用例 |
 | 包接口、依赖、跨包修改 | `make verify`；它运行 `make test` 和 `go build ./...` |
 | API 参数、状态码、响应模型 | 服务回归测试；同步 `internal/service/openapi.json`，运行时核对 `/openapi.json` 与 `/docs` |
@@ -38,7 +38,7 @@ python3 scripts/smoke.py metatube:test
 
 冒烟脚本会调用宿主机 `go` 构建图片 HTTP 夹具，自动创建并清理专用容器/卷。不要把它换成真实用户数据库。
 
-完整检查范围以 [.github/workflows/test.yml](../.github/workflows/test.yml) 为准。`make verify` 不包含原生镜像、纯 Go 回退测试或容器冒烟；CI 额外保存 `test-coverage` 附件并运行限资源负载检查。负载测试只针对 `loadtest` 镜像创建的一次性测试服务，命令与实验条件见 [原生 WebP 测试记录](native-webp-testing.md#复现)。
+完整检查范围以 [.github/workflows/test.yml](https://github.com/MejiroHachimi/metatube-sdk-go/blob/main/.github/workflows/test.yml) 为准。`make verify` 不包含原生镜像、纯 Go 回退测试或容器冒烟；CI 额外保存 `test-coverage` 附件并运行限资源负载检查。负载测试只针对 `loadtest` 镜像创建的一次性测试服务，命令与实验条件见 [原生 WebP 测试记录](native-webp-testing.md#复现)。
 
 需要代理 CA 时，可对上面每条 `docker build` 增加 `--secret id=proxy_ca,src=/path/to/trusted-ca-bundle.pem`；运行中的外部 HTTPS 请求还需相应运行时信任配置，见执行环境指引。不要关闭 TLS 校验。
 
