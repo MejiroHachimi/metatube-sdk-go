@@ -19,11 +19,15 @@ python3 -m venv .venv-docs
 git diff --check
 ```
 
-`site/` 和 `.venv-docs/` 不提交。API 完整参考及下载契约通过 `scripts/docs_hooks.py` 从 `internal/service/openapi.json` 生成，不维护生成文件副本。修改其他 Markdown 页面时直接编辑 `docs/`，新增页面同步更新 `mkdocs.yml` 导航。
+`site/` 和 `.venv-docs/` 不提交。API 页面使用 `overrides/api.html` 中的 Swagger UI，直接读取由 `scripts/docs_hooks.py` 发布的 `internal/service/openapi.json`。参数示例写入 OpenAPI 的 `example`，返回示例写入对应响应的 `content.application/json.examples`；不为单个请求新增教程页，也不再将响应码和模型展开为 Markdown 目录。
+
+Swagger UI 5.33.1 的 JS/CSS 与许可证保存在 `docs/assets/swagger-ui/`，无需 CDN；版本与来源见其中的 `VERSION.txt`。本站禁用 Try it out，在线调用仍使用实际服务的 `/docs`。修改其他 Markdown 页面时直接编辑 `docs/`，新增页面同步更新 `mkdocs.yml` 导航。
+
+接口默认折叠；展开后显示参数和 200 示例，其他状态通过“展开其他响应”查看。较长的补充说明可使用 MkDocs 的 `??? info "标题"` 折叠块，避免占满正文。
 
 ## GitHub Pages 自动发布
 
-`.github/workflows/docs.yml` 在 `main` 的文档、站点配置、生成脚本或 OpenAPI 发生变化时运行，也支持手动 `workflow_dispatch`。流程为安装固定版本的文档依赖 → 严格构建 → 上传 Pages artifact → 部署到 `github-pages` 环境。
+`.github/workflows/docs.yml` 在 `main` 的文档、页面模板、站点配置、生成脚本或 OpenAPI 发生变化时运行，也支持手动 `workflow_dispatch`。流程为安装固定版本的文档依赖 → 严格构建 → 上传 Pages artifact → 部署到 `github-pages` 环境。
 
 仓库 Settings → Pages → Source 应设为 **GitHub Actions**。构建 job 只读仓库；部署 job 使用 `pages: write` 和 `id-token: write`，无需配置额外长期 Token。按仓库约定直接提交并 push 到 `main`，无需创建 PR 或发布分支。
 

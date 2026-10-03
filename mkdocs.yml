@@ -7,6 +7,8 @@ edit_uri: edit/main/docs/
 strict: true
 theme:
   name: material
+  custom_dir: overrides
+  font: false
   language: zh
   features:
     - navigation.sections
@@ -38,6 +40,7 @@ markdown_extensions:
       permalink: true
       slugify: !!python/name:markdown.extensions.toc.slugify_unicode
   - pymdownx.superfences
+  - pymdownx.details
 validation:
   nav:
     omitted_files: warn
@@ -51,10 +54,7 @@ nav:
   - 部署与配置:
       - Docker / Heroku 部署: deployment.md
       - 环境变量: configuration.md
-  - API:
-      - 调用指南: api/index.md
-      - arbb014 实测示例: api/arbb014.md
-      - 完整接口与模型: api/reference.md
+  - API 参考: api/index.md
   - 接入与适配:
       - Jellyfin / Emby: integrations/jellyfin-emby.md
       - 数据源适配开发: integrations/providers.md

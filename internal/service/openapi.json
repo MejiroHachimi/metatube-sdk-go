@@ -18,7 +18,7 @@
     "/": {
       "get": {
         "operationId": "",
-        "summary": "Service identity",
+        "summary": "服务名称与版本",
         "description": "",
         "security": [],
         "parameters": [],
@@ -29,6 +29,17 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ServiceResponse"
+                },
+                "examples": {
+                  "live": {
+                    "summary": "2026-10-03 实测返回",
+                    "value": {
+                      "data": {
+                        "app": "metatube",
+                        "version": "0.1.0"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -161,13 +172,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/healthz": {
       "get": {
         "operationId": "healthz",
-        "summary": "Liveness",
+        "summary": "存活检查",
         "description": "Checks that the HTTP service is running; does not check external providers.",
         "security": [],
         "parameters": [],
@@ -178,6 +192,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/StatusResponse"
+                },
+                "examples": {
+                  "live": {
+                    "summary": "2026-10-03 实测返回",
+                    "value": {
+                      "data": {
+                        "status": "ok"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -310,13 +334,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/readyz": {
       "get": {
         "operationId": "readyz",
-        "summary": "Database readiness",
+        "summary": "数据库就绪检查",
         "description": "Pings the database with a two-second deadline; returns 503 if unavailable.",
         "security": [],
         "parameters": [],
@@ -327,6 +354,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/StatusResponse"
+                },
+                "examples": {
+                  "live": {
+                    "summary": "2026-10-03 实测返回",
+                    "value": {
+                      "data": {
+                        "status": "ready"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -459,13 +496,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/v1/providers": {
       "get": {
         "operationId": "v1_providers",
-        "summary": "List enabled providers",
+        "summary": "已启用的数据源",
         "description": "",
         "security": [],
         "parameters": [],
@@ -476,6 +516,50 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProvidersResponse"
+                },
+                "examples": {
+                  "live": {
+                    "summary": "2026-10-03 实测返回",
+                    "value": {
+                      "data": {
+                        "actor_providers": {
+                          "Gfriends": "https://github.com/gfriends/gfriends"
+                        },
+                        "movie_providers": {
+                          "10musume": "https://www.10musume.com/",
+                          "1Pondo": "https://www.1pondo.tv/",
+                          "AVE": "https://www.aventertainments.com/",
+                          "C0930": "https://www.c0930.com/",
+                          "Caribbeancom": "https://www.caribbeancom.com/",
+                          "CaribbeancomPR": "https://www.caribbeancompr.com/",
+                          "DAHLIA": "https://dahlia-av.jp/",
+                          "DUGA": "https://duga.jp/",
+                          "FALENO": "https://faleno.jp/top/",
+                          "FANZA": "https://www.dmm.co.jp/",
+                          "FC2": "https://adult.contents.fc2.com/",
+                          "FC2PPVDB": "https://fc2ppvdb.com/",
+                          "Gcolle": "https://gcolle.net/",
+                          "Getchu": "https://dl.getchu.com/",
+                          "H0930": "https://www.h0930.com/",
+                          "H4610": "https://www.h4610.com/",
+                          "HEYZO": "https://www.heyzo.com/",
+                          "HeyDouga": "https://www.heydouga.com/",
+                          "JAV321": "https://www.jav321.com/",
+                          "JAVFREE": "https://javfree.me/",
+                          "JavBus": "https://www.javbus.com/",
+                          "KIN8": "https://www.kin8tengoku.com/",
+                          "MGS": "https://www.mgstage.com/",
+                          "MURAMURA": "https://www.muramura.tv/",
+                          "MYWIFE": "https://mywife.cc/",
+                          "PACOPACOMAMA": "https://www.pacopacomama.com/",
+                          "Pcolle": "https://www.pcolle.com/",
+                          "SOD": "https://ec.sod.co.jp/prime/",
+                          "TOKYO-HOT": "https://my.tokyo-hot.com/",
+                          "fc2hub": "https://javten.com/"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -608,13 +692,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/v1/db/version": {
       "get": {
         "operationId": "v1_db_version",
-        "summary": "Database engine version",
+        "summary": "数据库版本",
         "description": "",
         "security": [
           {
@@ -629,6 +716,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DatabaseVersionResponse"
+                },
+                "examples": {
+                  "live": {
+                    "summary": "2026-10-03 实测返回",
+                    "value": {
+                      "data": {
+                        "version": "3.53.4"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -761,14 +858,17 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/v1/movies/search": {
       "get": {
         "operationId": "v1_movies_search",
-        "summary": "Search movies",
-        "description": "No results returns 404 for Jellyfin compatibility. No pagination. Results are provider-dependent; external websites may reject cloud IP addresses.",
+        "summary": "搜索影片",
+        "description": "输入 arbb014，不限定 provider，fallback=false。实测返回 JAV321 / h_1092arbb00014（ARBB-014），用这两个值请求影片详情。无匹配返回 404；不提供分页。结果取决于上游来源可用性。",
         "security": [
           {
             "BearerToken": []
@@ -776,13 +876,29 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/Q"
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Search term or a supported provider item URL.",
+            "example": "arbb014"
           },
           {
             "$ref": "#/components/parameters/SearchProvider"
           },
           {
-            "$ref": "#/components/parameters/Fallback"
+            "name": "fallback",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Include cached database results when supported.",
+            "example": false
           }
         ],
         "responses": {
@@ -792,6 +908,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MovieSearchResultListResponse"
+                },
+                "examples": {
+                  "arbb014": {
+                    "summary": "arbb014 实测 · 字段摘录",
+                    "description": "2026-10-03 实测 HTTP 200；仅展示接入所需字段，原值未改动。完整字段见 Schema。",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "h_1092arbb00014",
+                          "provider": "JAV321",
+                          "number": "ARBB-014",
+                          "actors": [
+                            "南梨央奈"
+                          ],
+                          "release_date": "2016-07-08T00:00:00Z",
+                          "score": 4
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -924,14 +1060,17 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "影片"
+        ]
       }
     },
     "/v1/movies/{provider}/{id}": {
       "get": {
         "operationId": "v1_movies__provider___id",
-        "summary": "Get movie metadata",
-        "description": "Text is plain text, list fields are deduplicated and blank entries removed. Movie genres matching EXCLUDED_GENRES are excluded using case-insensitive whole-label matching. Raw stored metadata is preserved.",
+        "summary": "影片详情",
+        "description": "示例使用搜索返回的 JAV321 / h_1092arbb00014，lazy=false 刷新上游。默认 lazy=true 优先读取已存记录。文本和分类只在响应中清洗，保留原始数据库记录。",
         "security": [
           {
             "BearerToken": []
@@ -939,13 +1078,35 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/Provider"
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider identifier from /v1/providers.",
+            "example": "JAV321"
           },
           {
-            "$ref": "#/components/parameters/ID"
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider-specific item ID; URL-encode the value.",
+            "example": "h_1092arbb00014"
           },
           {
-            "$ref": "#/components/parameters/Lazy"
+            "name": "lazy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Read stored metadata first; false refreshes the upstream metadata. Genre cleanup applies in both cases.",
+            "example": false
           }
         ],
         "responses": {
@@ -955,6 +1116,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MovieInfoResponse"
+                },
+                "examples": {
+                  "arbb014": {
+                    "summary": "arbb014 实测 · 字段摘录",
+                    "description": "2026-10-03 实测 HTTP 200；仅展示接入所需字段，原值未改动。完整字段见 Schema。",
+                    "value": {
+                      "data": {
+                        "id": "h_1092arbb00014",
+                        "provider": "JAV321",
+                        "number": "ARBB-014",
+                        "actors": [
+                          "南梨央奈"
+                        ],
+                        "maker": "＆RiBbON",
+                        "label": "",
+                        "director": "",
+                        "release_date": "2016-07-08T00:00:00Z",
+                        "runtime": 144,
+                        "score": 4
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1087,13 +1270,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "影片"
+        ]
       }
     },
     "/v1/actors/search": {
       "get": {
         "operationId": "v1_actors_search",
-        "summary": "Search actors",
+        "summary": "搜索演员",
         "description": "No results returns 404 for Jellyfin compatibility. No pagination. Results are provider-dependent; external websites may reject cloud IP addresses.",
         "security": [
           {
@@ -1250,13 +1436,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "演员"
+        ]
       }
     },
     "/v1/actors/{provider}/{id}": {
       "get": {
         "operationId": "v1_actors__provider___id",
-        "summary": "Get actor metadata",
+        "summary": "演员详情",
         "description": "Text is plain text, list fields are deduplicated and blank entries removed. Movie genres matching EXCLUDED_GENRES are excluded using case-insensitive whole-label matching. Raw stored metadata is preserved.",
         "security": [
           {
@@ -1413,13 +1602,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "演员"
+        ]
       }
     },
     "/v1/reviews/{provider}/{id}": {
       "get": {
         "operationId": "v1_reviews__provider___id",
-        "summary": "Get movie reviews",
+        "summary": "影片评论",
         "description": "",
         "security": [
           {
@@ -1586,13 +1778,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "评论"
+        ]
       }
     },
     "/v1/images/primary/{provider}/{id}": {
       "get": {
         "operationId": "v1_images_primary__provider___id",
-        "summary": "Get primary image",
+        "summary": "获取图片 · primary",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -1796,11 +1991,14 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       },
       "head": {
         "operationId": "v1_images_primary__provider___id_head",
-        "summary": "Image headers without response body",
+        "summary": "图片响应头 · primary",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -2004,13 +2202,16 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       }
     },
     "/v1/images/thumb/{provider}/{id}": {
       "get": {
         "operationId": "v1_images_thumb__provider___id",
-        "summary": "Get thumb image",
+        "summary": "获取图片 · thumb",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -2214,11 +2415,14 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       },
       "head": {
         "operationId": "v1_images_thumb__provider___id_head",
-        "summary": "Image headers without response body",
+        "summary": "图片响应头 · thumb",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -2422,13 +2626,16 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       }
     },
     "/v1/images/backdrop/{provider}/{id}": {
       "get": {
         "operationId": "v1_images_backdrop__provider___id",
-        "summary": "Get backdrop image",
+        "summary": "获取图片 · backdrop",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -2632,11 +2839,14 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       },
       "head": {
         "operationId": "v1_images_backdrop__provider___id_head",
-        "summary": "Image headers without response body",
+        "summary": "图片响应头 · backdrop",
         "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
@@ -2840,13 +3050,16 @@
           "304": {
             "description": "Image unchanged; no response body"
           }
-        }
+        },
+        "tags": [
+          "图片"
+        ]
       }
     },
     "/openapi.json": {
       "get": {
         "operationId": "openapi",
-        "summary": "OpenAPI document",
+        "summary": "OpenAPI 契约",
         "security": [],
         "responses": {
           "200": {
@@ -2859,13 +3072,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     },
     "/docs": {
       "get": {
         "operationId": "docs",
-        "summary": "Self-hosted interactive API reference",
+        "summary": "服务内 API 文档",
         "security": [],
         "responses": {
           "200": {
@@ -2878,7 +3094,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "系统"
+        ]
       }
     }
   },
@@ -3562,5 +3781,22 @@
         "additionalProperties": false
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "影片"
+    },
+    {
+      "name": "演员"
+    },
+    {
+      "name": "评论"
+    },
+    {
+      "name": "图片"
+    },
+    {
+      "name": "系统"
+    }
+  ]
 }

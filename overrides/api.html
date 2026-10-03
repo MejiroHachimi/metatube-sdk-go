@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ 'assets/swagger-ui/swagger-ui.css' | url }}">
+  <link rel="stylesheet" href="{{ 'assets/api.css' | url }}">
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+  <div id="swagger-ui" data-spec-url="{{ 'api/openapi.json' | url }}" aria-label="API 接口参考"></div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ 'assets/swagger-ui/swagger-ui-bundle.js' | url }}"></script>
+  <script src="{{ 'assets/api.js' | url }}"></script>
+{% endblock %}

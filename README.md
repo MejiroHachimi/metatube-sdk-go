@@ -30,8 +30,8 @@ docker compose up --build -d
 
 ## API 与适配
 
-- [API 调用指南](docs/api/index.md)：认证、调用流程、图片缓存和错误处理。
-- 完整接口与模型由 `internal/service/openapi.json` 自动生成到在线文档站；已部署服务的 `/docs` 支持交互式调用。
+- [Swagger API 参考](https://mejirohachimi.github.io/metatube-sdk-go/api/)：折叠式接口列表、参数、响应示例与模型，直接读取 `internal/service/openapi.json`；`arbb014` 实测示例位于影片搜索和详情接口中。
+- 已部署服务的 `/docs` 支持交互式调用。
 - [Jellyfin / Emby 接入](docs/integrations/jellyfin-emby.md)与[数据源适配开发](docs/integrations/providers.md)。
 
 ## 配置

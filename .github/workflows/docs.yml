@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'overrides/**'
       - 'scripts/docs_hooks.py'
       - 'internal/service/openapi.json'
       - '.github/workflows/docs.yml'

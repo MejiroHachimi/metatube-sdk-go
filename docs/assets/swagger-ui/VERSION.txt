@@ -1,0 +1,4 @@
+swagger-ui-dist 5.33.1
+Source: https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.33.1.tgz
+Integrity: sha512-H872wWkA53bFIsGgi7OWgmq+CRWw3nFQGdJWRqOB9wNwTm6e5ol34+qPDkV4AJlK+gglM2EsJiOOzsGsEGbluA==
+License: Apache-2.0 (see LICENSE and NOTICE)
