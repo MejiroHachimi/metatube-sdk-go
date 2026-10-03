@@ -903,7 +903,7 @@
         ],
         "responses": {
           "200": {
-            "description": "候选列表（精简字段），不含 maker、label、genres 等详情字段。用所选项的 provider 和 id 请求影片详情。",
+            "description": "搜索候选列表，不含 maker、label、series、genres 等详情字段。用所选项的 provider 和 id 请求[影片详情](#/影片/v1_movies__provider___id)，查看完整元数据与响应示例。",
             "content": {
               "application/json": {
                 "schema": {

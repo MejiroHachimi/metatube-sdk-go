@@ -19,7 +19,7 @@ python3 -m venv .venv-docs
 git diff --check
 ```
 
-`site/` 和 `.venv-docs/` 不提交。API 页面使用 `overrides/api.html` 中的 Swagger UI，直接读取由 `scripts/docs_hooks.py` 发布的 `internal/service/openapi.json`。参数示例写入 OpenAPI 的 `example`，返回示例写入对应响应的 `content.application/json.examples`；不为单个请求新增教程页，也不再将响应码和模型展开为 Markdown 目录。
+`site/` 和 `.venv-docs/` 不提交。API 页面使用 `overrides/api.html` 中的 Swagger UI，直接读取由 `scripts/docs_hooks.py` 发布的 `internal/service/openapi.json`。构建会按 OpenAPI 内容生成带哈希的文件名供 Swagger 加载，避免沿用旧版缓存；固定地址 `api/openapi.json` 保留用于下载。参数示例写入 OpenAPI 的 `example`，返回示例写入对应响应的 `content.application/json.examples`；不为单个请求新增教程页，也不再将响应码和模型展开为 Markdown 目录。
 
 Swagger UI 5.33.1 的 JS/CSS 与许可证保存在 `docs/assets/swagger-ui/`，无需 CDN；版本与来源见其中的 `VERSION.txt`。本站禁用 Try it out，在线调用仍使用实际服务的 `/docs`。修改其他 Markdown 页面时直接编辑 `docs/`，新增页面同步更新 `mkdocs.yml` 导航。
 

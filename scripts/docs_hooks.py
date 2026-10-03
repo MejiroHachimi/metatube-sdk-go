@@ -1,5 +1,6 @@
 """Publish the canonical OpenAPI contract and redirect former API tutorial URLs."""
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -38,6 +39,10 @@ def on_files(files, config):
     spec = json.loads(source)
     validate_refs(spec, spec)
     files.append(File.generated(config, "api/openapi.json", content=source))
+    # A new contract must not reuse the browser/CDN cache of an older example.
+    version = hashlib.sha256(source.encode("utf-8")).hexdigest()[:12]
+    config.extra["api_spec_path"] = f"api/openapi.{version}.json"
+    files.append(File.generated(config, config.extra["api_spec_path"], content=source))
     # Keep already shared links useful without maintaining duplicate API pages.
     redirect = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=../"><title>API 参考</title><a href="../">打开 API 参考</a></html>'
     for old_page in ("reference", "arbb014"):

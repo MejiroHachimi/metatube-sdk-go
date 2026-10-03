@@ -8,7 +8,7 @@
 
 {% block content %}
   {{ super() }}
-  <div id="swagger-ui" data-spec-url="{{ 'api/openapi.json' | url }}" aria-label="API 接口参考"></div>
+  <div id="swagger-ui" data-spec-url="{{ config.extra.api_spec_path | url }}" aria-label="API 接口参考"></div>
 {% endblock %}
 
 {% block scripts %}
