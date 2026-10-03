@@ -58,6 +58,28 @@ python3 scripts/smoke.py metatube:test
 
 元数据排队回归可运行 `go test -race ./internal/service -run 'TestMetadata|TestWaiting' -v`。容器验证沿用[限资源测试命令](native-webp-testing.md#复现)；`scripts/loadtest.py` 现包含上述 16 路元数据和混合请求场景。
 
+## 演员资料验证（2026-10-03）
+
+`make test` 包含默认来源注册、Token 配置接入、禁用 Gfriends 后的详情与 SQLite 缓存回归，以及 AV-LEAGUE / ThePornDBActor 的本地合成响应解析测试。CI 同样执行；这些测试不访问真实站点。
+
+默认构建通过本地应用 HTTP 接口访问 AV-LEAGUE 的检查结果如下，仅检查字段是否有值，不输出响应正文：
+
+| AV-LEAGUE ID | 生日 | 身高 | 血型 | 罩杯 | 三围 |
+| --- | --- | --- | --- | --- | --- |
+| 8301 | 有 | 有 | 有 | 有 | 有 |
+| 14005 | 无 | 有 | 无 | 有 | 有 |
+| 36672 | 有 | 有 | 无 | 有 | 有 |
+
+三个条目的详情、指定来源搜索、全来源搜索均返回 200，搜索能找到对应详情，数据库命中的上述字段与首次抓取一致。结果反映本次上游状态，不保证其他人物字段齐全。ThePornDBActor 的配置与解析已通过合成响应测试；本次没有访问 Token，未验证其真实站点。
+
+复查命令（访问真实站点，不作为默认 CI）：
+
+```sh
+python3 scripts/check_actor_fields.py http://127.0.0.1:8080
+```
+
+受保护的服务通过 `METATUBE_TOKEN` 环境变量传入服务 Token；脚本只输出状态码、字段存在性和一致性。可用 `--provider` 与 `--ids` 指定来源、样本。人物原始响应示例直接放在 API 的 200 示例中，不单独建页。
+
 ## 历史覆盖率快照
 
 以下为 2026-10-03 已记录的本地结果，不表示后续提交或当前工作区已经通过检查。原生后端与 Heroku Eco 压测条件见 [native-webp-testing.md](native-webp-testing.md)。

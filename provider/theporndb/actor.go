@@ -8,10 +8,12 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 	"golang.org/x/text/language"
 
+	mterrors "github.com/metatube-community/metatube-sdk-go/errors"
 	"github.com/metatube-community/metatube-sdk-go/model"
 	"github.com/metatube-community/metatube-sdk-go/provider"
 	"github.com/metatube-community/metatube-sdk-go/provider/internal/scraper"
@@ -20,6 +22,7 @@ import (
 var (
 	_ provider.ActorProvider = (*ThePornDBActor)(nil)
 	_ provider.ActorSearcher = (*ThePornDBActor)(nil)
+	_ provider.ConfigSetter  = (*ThePornDBActor)(nil)
 )
 
 const (
@@ -43,12 +46,27 @@ func NewThePornDBActor() *ThePornDBActor {
 	}
 }
 
-func (s *ThePornDBActor) SetConfig(config map[string]string) error {
-	if accessToken, ok := config["ACCESS_TOKEN"]; ok {
-		s.accessToken = accessToken
+// A credentialed provider is available automatically after configuration.
+func (s *ThePornDBActor) Priority() float64 {
+	if s.accessToken == "" {
+		return 0
 	}
+	return s.Scraper.Priority()
+}
+
+func (s *ThePornDBActor) SetConfig(config provider.Config) error {
+	if !config.Has("access_token") {
+		return nil
+	}
+	token, err := config.GetString("access_token")
+	if err != nil {
+		return err
+	}
+	s.accessToken = strings.TrimSpace(token)
 	return nil
 }
+
+var errMissingAccessToken = mterrors.New(http.StatusServiceUnavailable, "ThePornDBActor access token is not configured")
 
 // ParseActorIDFromURL impls ActorProvider.ParseActorIDFromURL.
 func (s *ThePornDBActor) ParseActorIDFromURL(rawURL string) (string, error) {
@@ -62,7 +80,7 @@ func (s *ThePornDBActor) ParseActorIDFromURL(rawURL string) (string, error) {
 // GetActorInfoByID impls ActorProvider.GetActorInfoByID.
 func (s *ThePornDBActor) GetActorInfoByID(id string) (info *model.ActorInfo, err error) {
 	if s.accessToken == "" {
-		return nil, nil
+		return nil, errMissingAccessToken
 	}
 
 	info = &model.ActorInfo{
@@ -72,9 +90,10 @@ func (s *ThePornDBActor) GetActorInfoByID(id string) (info *model.ActorInfo, err
 	}
 
 	c := s.ClonedCollector()
+	var parseErr error
 	c.OnResponse(func(r *colly.Response) {
 		resp := &getActorResponse{}
-		if err = json.Unmarshal(r.Body, resp); err != nil {
+		if parseErr = json.Unmarshal(r.Body, resp); parseErr != nil {
 			return
 		}
 
@@ -120,6 +139,9 @@ func (s *ThePornDBActor) GetActorInfoByID(id string) (info *model.ActorInfo, err
 	headers := http.Header{}
 	headers.Set("Authorization", fmt.Sprintf("Bearer %s", s.accessToken))
 	err = c.Request(http.MethodGet, fmt.Sprintf(apiGetActorURL, id), nil, nil, headers)
+	if err == nil {
+		err = parseErr
+	}
 	return
 }
 
@@ -136,16 +158,17 @@ func (s *ThePornDBActor) GetActorInfoByURL(rawURL string) (*model.ActorInfo, err
 // SearchActor impls ActorSearcher.SearchActor.
 func (s *ThePornDBActor) SearchActor(keyword string) (results []*model.ActorSearchResult, err error) {
 	if s.accessToken == "" {
-		return nil, nil
+		return nil, errMissingAccessToken
 	}
 
 	c := s.ClonedCollector()
 
 	results = make([]*model.ActorSearchResult, 0)
 
+	var parseErr error
 	c.OnResponse(func(r *colly.Response) {
 		resp := &searchActorResponse{}
-		if err = json.Unmarshal(r.Body, resp); err != nil {
+		if parseErr = json.Unmarshal(r.Body, resp); parseErr != nil {
 			return
 		}
 		for _, actor := range resp.Data {
@@ -176,6 +199,9 @@ func (s *ThePornDBActor) SearchActor(keyword string) (results []*model.ActorSear
 	headers := http.Header{}
 	headers.Set("Authorization", fmt.Sprintf("Bearer %s", s.accessToken))
 	err = c.Request(http.MethodGet, fmt.Sprintf(apiSearchActorURL, url.QueryEscape(keyword)), nil, nil, headers)
+	if err == nil {
+		err = parseErr
+	}
 	return
 }
 

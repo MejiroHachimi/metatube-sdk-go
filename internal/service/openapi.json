@@ -1340,7 +1340,7 @@
       "get": {
         "operationId": "v1_actors_search",
         "summary": "搜索演员",
-        "description": "No results returns 404 for Jellyfin compatibility. No pagination. Results are provider-dependent; external websites may reject cloud IP addresses.",
+        "description": "省略 provider 时搜索所有已启用的演员来源，并按优先级返回各来源结果。默认包含 AV-LEAGUE（人物资料）和 Gfriends（姓名、头像）；ThePornDBActor 内置，配置访问 Token 后自动启用。搜索结果只包含概要，生日、身高、血型、罩杯等请使用结果中的 provider 和 id 请求详情。无结果返回 404，不分页。",
         "security": [
           {
             "BearerToken": []
@@ -1348,10 +1348,25 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/Q"
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Search term or a supported provider item URL.",
+            "example": "三上悠亜"
           },
           {
-            "$ref": "#/components/parameters/SearchProvider"
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "可选的数据源标识，见 /v1/providers。关键词搜索时留空会并行查询所有已启用的对应类型来源；填写则仅查询该来源。各条结果保留自己的 provider 和 id，不合并不同来源的详情字段。q 为条目 URL 时按 URL 识别来源。",
+            "example": "AV-LEAGUE"
           },
           {
             "$ref": "#/components/parameters/Fallback"
@@ -1364,6 +1379,23 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ActorSearchResultListResponse"
+                },
+                "examples": {
+                  "avleague8301": {
+                    "value": {
+                      "data": [
+                        {
+                          "homepage": "https://www.av-league.com/actress/8301.html",
+                          "id": "8301",
+                          "images": [
+                            "https://www.av-league.com/image/act/8301/8301-0.jpg"
+                          ],
+                          "name": "三上悠亜",
+                          "provider": "AV-LEAGUE"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -1511,7 +1543,7 @@
       "get": {
         "operationId": "v1_actors__provider___id",
         "summary": "演员详情",
-        "description": "Text is plain text, list fields are deduplicated and blank entries removed. Movie genres matching EXCLUDED_GENRES are excluded using case-insensitive whole-label matching. Raw stored metadata is preserved.",
+        "description": "AV-LEAGUE 可提供生日、身高、血型、罩杯、三围、别名和出道日期，实际完整度取决于人物条目。Gfriends 仅提供姓名、头像，也会为其他日语演员来源补充头像；未启用或获取失败时保留原来源图片。ThePornDBActor 需访问 Token，当前适配不提供血型。各来源的人物资料不会自动合并。文本转为纯文本，列表去重、去空；缺失字段仍保留模型零值。lazy=true 优先使用 SQLite；Gfriends 使用自己的图片索引缓存。",
         "security": [
           {
             "BearerToken": []
@@ -1519,10 +1551,24 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/Provider"
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider identifier from /v1/providers.",
+            "example": "AV-LEAGUE"
           },
           {
-            "$ref": "#/components/parameters/ID"
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider-specific item ID; URL-encode the value.",
+            "example": "8301"
           },
           {
             "$ref": "#/components/parameters/Lazy"
@@ -1535,6 +1581,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ActorInfoResponse"
+                },
+                "examples": {
+                  "avleague8301": {
+                    "value": {
+                      "data": {
+                        "aliases": [],
+                        "birthday": "1993-08-16T00:00:00Z",
+                        "blood_type": "A",
+                        "cup_size": "F",
+                        "debut_date": "2015-06-01T00:00:00Z",
+                        "height": 159,
+                        "hobby": "",
+                        "homepage": "https://www.av-league.com/actress/8301.html",
+                        "id": "8301",
+                        "images": [
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/0-Hand-Storage/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1637650805",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/2-Juicy-Honey/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1607433426",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/3-MUTEKI/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1607433426",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/7-Moodyz/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1608131523",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/7-S1/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1608131525",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/8-GRAPHIS/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1608131510",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/8-Ideapocket/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1686698115",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/8-Warashi/AI-Fix-%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1608131461",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/9-AVDBS/AI-Fix-%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1610423707",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/9-Javrave/AI-Fix-%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1610423724",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/y-AVDC/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1667007583",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/y-Minnano/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1658331539",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/z-DMM%28%E9%AA%91%29/AI-Fix-%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1607433629",
+                          "https://raw.githubusercontent.com/gfriends/gfriends/master/Content/z-Derekhsu/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C.jpg?t=1610423748",
+                          "https://www.av-league.com/image/act/8301/8301-0.webp"
+                        ],
+                        "measurements": "B:84 / W:58 / H:88",
+                        "name": "三上悠亜",
+                        "nationality": "愛知県",
+                        "provider": "AV-LEAGUE",
+                        "skill": "",
+                        "summary": ""
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3563,10 +3649,12 @@
             "type": "string"
           },
           "blood_type": {
-            "type": "string"
+            "type": "string",
+            "description": "血型；来源未提供时为空字符串。"
           },
           "cup_size": {
-            "type": "string"
+            "type": "string",
+            "description": "罩杯；来源未提供时为空字符串。"
           },
           "measurements": {
             "type": "string"
@@ -3575,7 +3663,8 @@
             "type": "string"
           },
           "height": {
-            "type": "integer"
+            "type": "integer",
+            "description": "身高，单位 cm；未知为 0。"
           },
           "aliases": {
             "type": "array",

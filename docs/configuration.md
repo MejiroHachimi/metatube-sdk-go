@@ -41,4 +41,14 @@ EXCLUDED_GENRES='1080p,720p,4K,Blu-ray,Bluray,Blu ray,蓝光,藍光,ブルーレ
 
 队列或等待人数达到上限返回 503，并带 `Retry-After: 1`；超时返回 504。客户端应采用有限次数的退避重试并加少量随机延迟，避免立即重复提交整批任务。健康检查和已命中缓存的图片不占等待名额。增加队列长度不会提高处理速度，也不会让超过请求时限的批次自动完成；25 秒以上的持久化后台任务需要另行设计任务接口。
 
-SDK 的 `MT_*` provider 配置仍可使用，见上游项目；通常不必设置。网络请求使用 SDK 的提供者适配器；SDK 未完整支持请求上下文取消，因此 HTTP 超时后某些上游工作可能短暂继续；原生编码也不能中途强制终止。运行中的任务直到实际结束才释放并发和像素额度。排队中的图片会在超时或所有客户端断开时取消，不会提前解码。
+SDK 的 `MT_*` provider 配置见[数据源适配](integrations/providers.md#provider-配置)。网络请求使用 SDK 的提供者适配器；SDK 未完整支持请求上下文取消，因此 HTTP 超时后某些上游工作可能短暂继续；原生编码也不能中途强制终止。运行中的任务直到实际结束才释放并发和像素额度。排队中的图片会在超时或所有客户端断开时取消，不会提前解码。
+
+## 演员数据源
+
+默认构建启用 AV-LEAGUE 和 Gfriends，无需额外开关。ThePornDBActor 同样内置，设置以下凭据后自动启用，无需 `experimental` 构建标签：
+
+| 环境变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `MT_ACTOR_PROVIDER_THEPORNDBACTOR__ACCESS_TOKEN` | 空 | ThePornDB 的 API Token；未配置时不参与搜索，也不出现在已启用来源列表中 |
+
+更新环境变量后重启服务。来源优先级默认为 AV-LEAGUE / ThePornDBActor 1000、Gfriends 999；`MT_ACTOR_PROVIDER_AV_LEAGUE__PRIORITY=0` 或 `MT_ACTOR_PROVIDER_GFRIENDS__PRIORITY=0` 可分别禁用来源。ThePornDB 的影片来源仍属于实验构建，不影响默认演员功能。

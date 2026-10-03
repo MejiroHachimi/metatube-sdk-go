@@ -4,6 +4,7 @@ build:
 run:
 	go run ./cmd/metatube
 test:
-	go test -race -coverprofile=coverage.out ./internal/service ./imageutil ./database ./engine/dbengine
+	go test -race -coverprofile=coverage.out ./internal/service ./imageutil ./database ./engine/dbengine ./engine
+	go test -race ./provider/av-league ./provider/theporndb -run TestFixture
 verify: test
 	go build ./...
