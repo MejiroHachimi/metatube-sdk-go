@@ -89,7 +89,7 @@ SDK 的 `MT_*` provider 配置仍可使用，见上游项目；通常不必设�
 
 ## Heroku
 
-仓库提供 `app.json` 和 `heroku.yml`。使用私有仓库时先在 Heroku 连接相应 GitHub 账号，再选择本仓库；或使用 CLI 的 container 发布方式。Heroku 的 dyno 通常计费，模板不自动开通数据库等付费附加服务。
+仓库提供 `app.json`、`heroku.yml` 和兼容 Heroku 构建器的 `Dockerfile.heroku`。推荐按 [Heroku 源码部署步骤](docs/deployment.md#heroku-源码部署推荐) 创建应用、配置 Token、发布并启动 web dyno。使用私有仓库时先在 Heroku 连接相应 GitHub 账号，再选择本仓库；也可使用 CLI 的 Container Registry 发布方式。Heroku 的 dyno 通常计费，模板不自动开通数据库等付费附加服务。
 
 - `app.json` 自动生成 `TOKEN`，启动后在应用 Config Vars 中读取并填入插件。
 - `DATA_DIR=/tmp/metatube` 使用临时 SQLite 缓存；dyno 替换或重启可能丢失缓存。本版本仅支持 SQLite；需要持久化时应部署在能挂载持久卷的平台。
