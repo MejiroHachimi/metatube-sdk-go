@@ -32,7 +32,7 @@
                 },
                 "examples": {
                   "live": {
-                    "summary": "2026-10-03 实测返回",
+                    "summary": "成功响应",
                     "value": {
                       "data": {
                         "app": "metatube",
@@ -195,7 +195,7 @@
                 },
                 "examples": {
                   "live": {
-                    "summary": "2026-10-03 实测返回",
+                    "summary": "成功响应",
                     "value": {
                       "data": {
                         "status": "ok"
@@ -357,7 +357,7 @@
                 },
                 "examples": {
                   "live": {
-                    "summary": "2026-10-03 实测返回",
+                    "summary": "成功响应",
                     "value": {
                       "data": {
                         "status": "ready"
@@ -519,7 +519,7 @@
                 },
                 "examples": {
                   "live": {
-                    "summary": "2026-10-03 实测返回",
+                    "summary": "成功响应",
                     "value": {
                       "data": {
                         "actor_providers": {
@@ -719,7 +719,7 @@
                 },
                 "examples": {
                   "live": {
-                    "summary": "2026-10-03 实测返回",
+                    "summary": "成功响应",
                     "value": {
                       "data": {
                         "version": "3.53.4"
@@ -868,7 +868,7 @@
       "get": {
         "operationId": "v1_movies_search",
         "summary": "搜索影片",
-        "description": "按番号或关键词搜索。省略 provider 即并行搜索所有已启用的影片来源，汇总成功结果；同一番号在不同来源中可有多条记录，按匹配度和来源优先级排序，不合并详情字段。\n\n示例：`GET /v1/movies/search?q=arbb014&fallback=false`。这次实测只有 JAV321 返回匹配项，并不代表只查询了 JAV321。结果随来源可用性变化；无匹配返回 404，不提供分页。q 为条目 URL 时只读取该 URL 对应来源。",
+        "description": "按番号或关键词搜索。省略 provider 会并行查询所有已启用的影片来源，汇总成功结果；同一番号可返回多个来源的候选，按匹配度和来源优先级排序。无匹配返回 404，不提供分页。q 为条目 URL 时只读取对应来源。",
         "security": [
           {
             "BearerToken": []
@@ -911,19 +911,23 @@
                 },
                 "examples": {
                   "arbb014": {
-                    "summary": "arbb014 实测 · 字段摘录",
-                    "description": "2026-10-03 未传 provider、fallback=false 的实测 HTTP 200；当次仅返回一个 JAV321 候选。以下为字段摘录，原值未改动；完整搜索字段见 Schema。",
+                    "summary": "ARBB-014",
+                    "description": "敏感文本与媒体地址已隐藏。",
                     "value": {
                       "data": [
                         {
-                          "id": "h_1092arbb00014",
-                          "provider": "JAV321",
-                          "number": "ARBB-014",
                           "actors": [
                             "南梨央奈"
                           ],
+                          "cover_url": "[已隐藏]",
+                          "homepage": "[已隐藏]",
+                          "id": "h_1092arbb00014",
+                          "number": "ARBB-014",
+                          "provider": "JAV321",
                           "release_date": "2016-07-08T00:00:00Z",
-                          "score": 4
+                          "score": 4,
+                          "thumb_url": "[已隐藏]",
+                          "title": "[已隐藏]"
                         }
                       ]
                     }
@@ -1119,22 +1123,62 @@
                 },
                 "examples": {
                   "arbb014": {
-                    "summary": "arbb014 实测 · 字段摘录",
-                    "description": "2026-10-03 实测 HTTP 200 的字段摘录，原值未改动。maker 为 ＆RiBbON；label 和 director 均为空，当前 JAV321 适配器未提取这两个字段。完整响应还包含非空 series 和 6 个 genres，此摘录未展示；字段定义见 Schema。",
+                    "summary": "ARBB-014",
+                    "description": "敏感文本与媒体地址已隐藏。",
                     "value": {
                       "data": {
-                        "id": "h_1092arbb00014",
-                        "provider": "JAV321",
-                        "number": "ARBB-014",
                         "actors": [
                           "南梨央奈"
                         ],
-                        "maker": "＆RiBbON",
-                        "label": "",
+                        "big_cover_url": "",
+                        "big_thumb_url": "",
+                        "cover_url": "[已隐藏]",
                         "director": "",
+                        "genres": [
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]"
+                        ],
+                        "homepage": "[已隐藏]",
+                        "id": "h_1092arbb00014",
+                        "label": "",
+                        "maker": "＆RiBbON",
+                        "number": "ARBB-014",
+                        "preview_images": [
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]",
+                          "[已隐藏]"
+                        ],
+                        "preview_video_hls_url": "",
+                        "preview_video_url": "[已隐藏]",
+                        "provider": "JAV321",
                         "release_date": "2016-07-08T00:00:00Z",
                         "runtime": 144,
-                        "score": 4
+                        "score": 4,
+                        "series": "[已隐藏]",
+                        "summary": "[已隐藏]",
+                        "thumb_url": "[已隐藏]",
+                        "title": "[已隐藏]"
                       }
                     }
                   }
@@ -3241,7 +3285,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "来源内部的条目 ID，与 provider 共同标识记录；不是 UUID，API 不另返回 uuid 字段。"
           },
           "number": {
             "type": "string"
@@ -3353,7 +3398,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "来源内部的条目 ID，与 provider 共同标识记录；不是 UUID，API 不另返回 uuid 字段。"
           },
           "number": {
             "type": "string"
