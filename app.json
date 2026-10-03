@@ -5,6 +5,6 @@
   "success_url": "/docs",
   "env": {
     "TOKEN": {"description": "MetaTube API token. Copy this value into the Jellyfin plugin Token setting.", "generator": "secret"},
-    "DATA_DIR": {"description": "Temporary SQLite metadata cache on Heroku. Attach external PostgreSQL for persistence.", "value": "/tmp/metatube"}
+    "DATA_DIR": {"description": "Temporary SQLite metadata cache on Heroku; dyno restarts may clear it. For persistence, deploy on a platform with a persistent volume. PostgreSQL is not supported.", "value": "/tmp/metatube"}
   }
 }

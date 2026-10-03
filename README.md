@@ -2,6 +2,8 @@
 
 开箱即用的 Jellyfin / Emby 元数据后端：内置 SQLite、分类清洗、图片缓存和交互式 API 文档。
 
+这是可独立部署的服务应用，无需另外编写程序调用 SDK。仓库目录及 Go 模块路径中的 `metatube-sdk-go` 沿用上游命名；部署使用本仓库的 `cmd/metatube` 入口。浏览器入口 `/docs` 是交互式 API 文档，目前不提供独立的 Web 管理界面。
+
 ```sh
 docker compose up --build -d
 ```

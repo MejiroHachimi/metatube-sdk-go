@@ -14,6 +14,8 @@ Compose 自动创建元数据卷。单纯 `docker compose down` 保留卷；不�
 
 ## Heroku Container Registry
 
+Heroku 源码部署使用 `heroku.yml` 指定的 `Dockerfile.heroku`，兼容不支持 BuildKit 的平台构建器。它与默认 Dockerfile 使用相同的服务入口和原生 WebP 运行依赖，不包含测试夹具。默认 Dockerfile 仍用于本地 Docker / Compose 和下述 Container Registry 发布流程。
+
 此路径发布到调用者指定的应用。先用新测试应用验证，再切换 Jellyfin；不覆盖现有生产应用。
 
 ```sh
