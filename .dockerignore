@@ -5,3 +5,6 @@ data
 .env
 *.log
 *.out
+site
+.venv-docs
+**/__pycache__
