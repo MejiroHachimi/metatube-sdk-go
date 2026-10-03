@@ -4,6 +4,6 @@ build:
 run:
 	go run ./cmd/metatube
 test:
-	go test -race ./internal/service ./imageutil
+	go test -race -coverprofile=coverage.out ./internal/service ./imageutil ./database ./engine/dbengine
 verify: test
 	go build ./...

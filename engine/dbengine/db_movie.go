@@ -6,7 +6,6 @@ import (
 
 	"gorm.io/gorm/clause"
 
-	"github.com/metatube-community/metatube-sdk-go/database"
 	"github.com/metatube-community/metatube-sdk-go/engine/providerid"
 	"github.com/metatube-community/metatube-sdk-go/model"
 )
@@ -54,34 +53,17 @@ func (e *engine) SearchMovie(keyword string, opts MovieSearchOptions) ([]*model.
 	// Note: keyword can be an ID, a number, or a title, so we should
 	// query all of them for a better match. Also, it's case-insensitive.
 	pattern := "%" + keyword + "%"
-	if e.Driver() == database.Postgres {
-		tx = tx.Where(
-			`(
-			  number COLLATE NOCASE = ?
-			  OR id COLLATE NOCASE = ?
-			  OR number ILIKE ?
-			  OR title ILIKE ?
-			  OR similarity(number, ?) > ?
-			  OR similarity(title, ?) > ?
-			)`,
-			keyword, keyword,
-			pattern, pattern,
-			keyword, opts.Thresholds.Number,
-			keyword, opts.Thresholds.Title,
-		)
-	} else { // sqlite
-		tx = tx.Where(
-			`(
-			  number COLLATE NOCASE = ?
-			  OR id COLLATE NOCASE = ?
-			  OR number LIKE ? COLLATE NOCASE
-			  OR id LIKE ? COLLATE NOCASE
-			  OR title LIKE ? COLLATE NOCASE
-			)`,
-			keyword, keyword,
-			pattern, pattern, pattern,
-		)
-	}
+	tx = tx.Where(
+		`(
+		  number COLLATE NOCASE = ?
+		  OR id COLLATE NOCASE = ?
+		  OR number LIKE ? COLLATE NOCASE
+		  OR id LIKE ? COLLATE NOCASE
+		  OR title LIKE ? COLLATE NOCASE
+		)`,
+		keyword, keyword,
+		pattern, pattern, pattern,
+	)
 
 	// pagination.
 	if opts.Limit > 0 {

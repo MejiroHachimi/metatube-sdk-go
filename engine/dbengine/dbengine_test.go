@@ -1,20 +1,13 @@
 package dbengine
 
 import (
-	"database/sql"
 	_ "embed"
 	"encoding/json"
-	"log"
-	"net"
-	"net/url"
 	"slices"
 	"sort"
 	"strings"
 	"testing"
 
-	_ "github.com/lib/pq"
-	"github.com/ory/dockertest"
-	"github.com/ory/dockertest/docker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -55,11 +48,6 @@ func TestDBEngineTestSuite(t *testing.T) {
 			// SQLite (memory mode)
 			typ: database.Sqlite,
 			dsn: ":memory:",
-		},
-		{
-			// Postgres
-			typ: database.Postgres,
-			dsn: postgresDSN,
 		},
 	}
 
@@ -253,18 +241,6 @@ func (s *DBEngineTestSuite) TestMovie() {
 		assert.GreaterOrEqual(t, len(movies), 1)
 		t.Log(jsonify(movies))
 	})
-
-	s.T().Run("search movie by title (fuzzer)", func(t *testing.T) {
-		if s.typ != database.Postgres {
-			t.SkipNow()
-		}
-		// fuzz match here, including number and partial title.
-		movies, err := s.eng.SearchMovie("AMBI-133 エロ配信が担任の先生にバレちゃうなんて！！ 高瀬りな", MovieSearchOptions{})
-		require.NoError(t, err)
-		require.Len(t, movies, 1)
-		assert.Equal(t, "h_237ambi00133", movies[0].ID)
-		t.Log(jsonify(movies))
-	})
 }
 
 func (s *DBEngineTestSuite) TestMovie_Reviews() {
@@ -331,68 +307,3 @@ func jsonify(v interface{}) string {
 	data, _ := json.MarshalIndent(v, "", "\t")
 	return string(data)
 }
-
-func TestMain(m *testing.M) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		log.Fatalf("Could not construct pool: %s", err)
-	}
-
-	if err := pool.Client.Ping(); err != nil {
-		log.Fatalf("Could not connect to Docker: %s", err)
-	}
-
-	resource, err := pool.RunWithOptions(
-		&dockertest.RunOptions{
-			Repository: "postgres",
-			Tag:        "15-alpine",
-			Env: []string{
-				"POSTGRES_DB=" + postgresDB,
-				"POSTGRES_USER=" + postgresUser,
-				"POSTGRES_PASSWORD=" + postgresPass,
-			},
-		},
-		func(config *docker.HostConfig) {
-			config.AutoRemove = true
-			config.RestartPolicy = docker.RestartPolicy{Name: "no"}
-		},
-	)
-	if err != nil {
-		log.Fatalf("Could not start resource: %s", err)
-	}
-
-	postgresDSN = (&url.URL{
-		Scheme:   postgresDriver,
-		User:     url.UserPassword(postgresUser, postgresPass),
-		Host:     net.JoinHostPort("localhost", resource.GetPort("5432/tcp")),
-		Path:     postgresDB,
-		RawQuery: url.Values{"sslmode": []string{"disable"}}.Encode(),
-	}).String()
-
-	if err := pool.Retry(func() error {
-		db, err := sql.Open(postgresDriver, postgresDSN)
-		if err != nil {
-			return err
-		}
-		return db.Ping()
-	}); err != nil {
-		log.Fatalf("Could not connect to database: %s", err)
-	}
-
-	defer func() {
-		if err := pool.Purge(resource); err != nil {
-			log.Fatalf("Could not purge resource: %s", err)
-		}
-	}()
-
-	m.Run()
-}
-
-var postgresDSN string
-
-const (
-	postgresDriver = "postgres"
-	postgresDB
-	postgresUser
-	postgresPass
-)

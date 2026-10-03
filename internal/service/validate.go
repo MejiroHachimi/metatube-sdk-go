@@ -66,7 +66,8 @@ func validate(r *http.Request) (bool, error) {
 		if e != nil || n < 1 || n > 100 {
 			return image, fmt.Errorf("quality must be between 1 and 100")
 		}
-		q.Set("quality", strconv.Itoa(n))
+		// Accept legacy quality parameters, but always encode at quality 80.
+		q.Del("quality")
 	}
 	for _, k := range []string{"ratio", "pos"} {
 		if v := q.Get(k); v != "" {

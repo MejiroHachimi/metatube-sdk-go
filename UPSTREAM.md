@@ -8,7 +8,10 @@ No sibling checkout or local module replacement is required.
 
 Service additions live in `internal/service`, `cmd/metatube`, the root deployment
 files and `docs`. `engine/image.go` now uses the bounded decoder added in
-`imageutil/limited.go`. The original SDK license and source attribution remain.
+`imageutil/limited.go`. Image routes now encode WebP at fixed quality 80.
+The maintained server and SDK database engines support SQLite only; PostgreSQL
+connections, migrations and integration tests have been removed. The existing
+array serialization is retained for compatibility with existing SQLite files. The original SDK license and source attribution remain.
 The original README follows for reference; its installation workflow is for the
 SDK, not this standalone server.
 

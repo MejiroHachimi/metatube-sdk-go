@@ -209,10 +209,10 @@ func (g *Gateway) compute(r *http.Request, image bool) (out response) {
 	header.Set("Cache-Control", "no-store")
 	body := c.body.Bytes()
 	if image {
-		if !strings.HasPrefix(c.header.Get("Content-Type"), "image/jpeg") {
+		if !strings.HasPrefix(c.header.Get("Content-Type"), "image/webp") {
 			return errorResponse(502, "invalid upstream image")
 		}
-		header.Set("Content-Type", "image/jpeg")
+		header.Set("Content-Type", "image/webp")
 		header.Set("Cache-Control", fmt.Sprintf("public, max-age=3600, s-maxage=%d", int(g.config.CacheTTL.Seconds())))
 		for _, k := range []string{"X-MetaTube-Image-Width", "X-MetaTube-Image-Height"} {
 			if v := c.header.Get(k); v != "" {

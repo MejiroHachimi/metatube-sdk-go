@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"image"
-	"image/jpeg"
 	"image/png"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +14,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/metatube-community/metatube-sdk-go/database"
 	"github.com/metatube-community/metatube-sdk-go/model"
+	"golang.org/x/image/webp"
 	"gorm.io/gorm/logger"
 )
 
@@ -118,15 +118,18 @@ func TestRealImagePipeline(t *testing.T) {
 		t.Fatal(err)
 	}
 	path := "/v1/images/primary/FANZA/test00002?pos=1"
-	for i := 0; i < 2; i++ {
-		w := request(handler, path)
+	for i, query := range []string{"", "&quality=1", "&quality=80", "&quality=100"} {
+		w := request(handler, path+query)
 		if w.Code != 200 {
 			t.Fatal(w.Code, w.Body.String())
 		}
-		if _, err := jpeg.Decode(bytes.NewReader(w.Body.Bytes())); err != nil {
-			t.Fatal("not JPEG", err)
+		if _, err := webp.Decode(bytes.NewReader(w.Body.Bytes())); err != nil {
+			t.Fatal("not WebP", err)
 		}
-		if i == 1 && w.Header().Get("X-Cache") != "HIT" {
+		if w.Header().Get("Content-Type") != "image/webp" {
+			t.Fatal("wrong image content type", w.Header())
+		}
+		if i > 0 && w.Header().Get("X-Cache") != "HIT" {
 			t.Fatal("no image cache hit")
 		}
 	}

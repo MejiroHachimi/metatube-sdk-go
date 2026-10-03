@@ -55,8 +55,8 @@ func TestImageCacheVariantsAndConditionalRequests(t *testing.T) {
 	var calls atomic.Int32
 	g := NewGateway(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
-		w.Header().Set("Content-Type", "image/jpeg")
-		fmt.Fprint(w, "jpeg:", r.URL.RawQuery)
+		w.Header().Set("Content-Type", "image/webp")
+		fmt.Fprint(w, "webp:", r.URL.RawQuery)
 	}), testConfig(), nil, nil)
 	path := "/v1/images/primary/FANZA/id?quality=90&pos=1"
 	first := request(g, path)
@@ -109,8 +109,8 @@ func TestConcurrentImagesCoalesce(t *testing.T) {
 			close(started)
 		}
 		<-release
-		w.Header().Set("Content-Type", "image/jpeg")
-		fmt.Fprint(w, "jpeg")
+		w.Header().Set("Content-Type", "image/webp")
+		fmt.Fprint(w, "webp")
 	}), testConfig(), nil, nil)
 	var wg sync.WaitGroup
 	for range 12 {

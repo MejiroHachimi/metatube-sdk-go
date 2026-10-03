@@ -1,22 +1,18 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/glebarez/sqlite"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-const (
-	Sqlite   = "sqlite"
-	Postgres = "postgres"
-)
+const Sqlite = "sqlite"
 
 type Config struct {
 	// DSN the Data Source Name.
@@ -58,21 +54,13 @@ func (cfg *Config) applyDefaults() {
 func Open(cfg *Config) (*gorm.DB, error) {
 	cfg.applyDefaults()
 
-	var dialector gorm.Dialector
-	// We try to parse it as postgresql, otherwise
-	// fallback to sqlite.
-	if regexp.MustCompile(`^postgres(ql)?://`).MatchString(cfg.DSN) ||
-		len(strings.Fields(cfg.DSN)) >= 3 {
-		dialector = postgres.New(postgres.Config{
-			DSN: cfg.DSN,
-			// set true to disable implicit prepared statement usage.
-			PreferSimpleProtocol: !cfg.PreparedStmt,
-		})
-	} else {
-		dialector = sqlite.Open(cfg.DSN)
+	// Reject old remote database configuration instead of creating a local file
+	// whose name accidentally contains a connection string.
+	if (strings.Contains(cfg.DSN, "://") && !strings.HasPrefix(cfg.DSN, "file:")) || strings.Contains(cfg.DSN, "host=") || strings.Contains(cfg.DSN, "dbname=") {
+		return nil, fmt.Errorf("only SQLite databases are supported; use a local path or file: URI")
 	}
 
-	db, err := gorm.Open(dialector, &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(cfg.DSN), &gorm.Config{
 		Logger: logger.New(
 			log.New(os.Stdout, "[GORM]\u0020", log.LstdFlags),
 			logger.Config{

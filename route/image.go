@@ -34,7 +34,6 @@ type imageQuery struct {
 	Position float64 `form:"pos"`
 	Auto     bool    `form:"auto"`
 	Badge    string  `form:"badge"`
-	Quality  int     `form:"quality"`
 }
 
 func getImage(app *engine.Engine, typ imageType) gin.HandlerFunc {
@@ -59,7 +58,6 @@ func getImage(app *engine.Engine, typ imageType) gin.HandlerFunc {
 		query := &imageQuery{
 			Ratio:    -1,
 			Position: -1,
-			Quality:  90,
 		}
 		if err := c.ShouldBindQuery(query); err != nil {
 			abortWithStatusMessage(c, http.StatusBadRequest, err)
@@ -129,16 +127,16 @@ func getImage(app *engine.Engine, typ imageType) gin.HandlerFunc {
 		c.Header("X-MetaTube-Image-Height", strconv.Itoa(img.Bounds().Dy()))
 
 		buf := &bytes.Buffer{}
-		if err = imageutil.EncodeToJPEG(buf, img, query.Quality); err != nil {
+		if err = imageutil.EncodeToWebP(buf, img); err != nil {
 			panic(err)
 		}
 
 		c.Render(http.StatusOK, render.Reader{
-			ContentType:   jpegImageMIMEType,
+			ContentType:   webpImageMIMEType,
 			ContentLength: int64(buf.Len()),
 			Reader:        buf,
 		})
 	}
 }
 
-const jpegImageMIMEType = "image/jpeg"
+const webpImageMIMEType = "image/webp"

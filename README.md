@@ -13,16 +13,16 @@ docker compose up --build -d
 ## 首版提供的能力
 
 - 保持插件使用的 `/v1` 元数据、搜索、评论、图片端点和 `data/error` JSON 结构。
-- 默认 SQLite 存储；Docker 命名卷保存元数据。支持通过 `DSN` 或 `DATABASE_URL` 接入 PostgreSQL。
+- 默认 SQLite 存储；Docker 命名卷保存元数据。仅支持 SQLite，可用 `DSN` 指定 SQLite 文件路径或 `file:` URI。
 - 返回纯文本字段；数组清理空项、去重；默认排除 `1080p`、`Blu-ray`、`Bluray`、`Blu ray`、`蓝光`、`藍光`、`ブルーレイ`、`Blu-ray（ブルーレイ）`。
 - 分类排除采用不区分大小写的完整名称匹配，清洗只发生在响应中。原始数据库记录、影片标题和已有 Jellyfin 条目不会被批量改写。
-- 成品 JPEG 按图片类型和处理参数缓存；默认 64 MiB 预算、24 小时固定 TTL、单张超过 8 MiB 不入缓存。预算包含图片、键和估算开销，不等于整个进程内存上限。
+- 图片直接编码为有损 WebP，质量固定为 80（不是保证缩小 80%）。成品按图片类型和裁剪、水印参数缓存；默认 64 MiB 预算、24 小时固定 TTL、单张超过 8 MiB 不入缓存。预算包含图片、键和估算开销，不等于整个进程内存上限。
 - 并发相同图片请求合并；ETag / 304、HEAD、`X-Cache`。错误响应不缓存；元数据响应 `no-store`。
 - 上游图片限制 16 MiB 压缩数据、2000 万像素；默认最多同时处理 4 个未命中的请求，超出返回 503。
 - `/healthz` 存活检查、`/readyz` 数据库检查、可配置请求时限、SIGTERM 优雅退出。
 - `/docs` 完全本地加载，不依赖第三方文档脚本或 CDN。
 
-本仓库包含固定版本 SDK 源码，不依赖旁边的其他检出目录。来源、许可证和改动边界见 [UPSTREAM.md](UPSTREAM.md)。服务入口是 `cmd/metatube`；SDK 原入口仅作为上游参考保留。
+本仓库包含固定版本 SDK 源码，不依赖旁边的其他检出目录。来源、许可证和改动边界见 [UPSTREAM.md](UPSTREAM.md)。服务入口是 `cmd/metatube`；SDK 原入口仅作为上游参考保留。旧的 PostgreSQL DSN 和 `DATABASE_URL` 会在启动时明确报错；现有 SQLite 数据格式保持兼容。
 
 ## API 契约
 
@@ -34,7 +34,7 @@ docker compose up --build -d
 {"error":{"code":400,"message":"quality must be between 1 and 100"}}
 ```
 
-上述成功示例仅展示字段片段，完整字段与类型见 `/docs`。图片成功响应为 `image/jpeg`；图片错误也是 JSON。错误码与 HTTP 状态一致，不返回堆栈、数据库地址或上游错误原文。
+上述成功示例仅展示字段片段，完整字段与类型见 `/docs`。图片成功响应为 `image/webp`；图片错误也是 JSON。错误码与 HTTP 状态一致，不返回堆栈、数据库地址或上游错误原文。
 
 | GET 路径 | 用途 | Token |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ docker compose up --build -d
 | `/v1/images/{primary,thumb,backdrop}/{provider}/{id}` | 图片，亦支持 HEAD | 无，兼容插件图片下载 |
 | `/docs`, `/openapi.json` | API 文档 | 无 |
 
-认证使用 `Authorization: Bearer <TOKEN>`，不要将 Token 放入查询字符串。所有查询参数的范围、默认值、返回模型和错误状态在 OpenAPI 中列明。未知参数和重复参数返回 400。搜索结果为空时返回 404，保持原插件行为；没有分页接口。
+认证使用 `Authorization: Bearer <TOKEN>`，不要将 Token 放入查询字符串。所有查询参数的范围、默认值、返回模型和错误状态在 OpenAPI 中列明。旧客户端的 `quality=1..100` 参数仍接受，但统一输出质量 80，且不影响缓存键。未知参数和重复参数返回 400。搜索结果为空时返回 404，保持原插件行为；没有分页接口。
 
 图片 `url` 参数只接受该条目元数据中已有的图片地址，避免把服务当作任意 URL 代理。水印仅支持内置 `zimu.png`、`u.png`、`uc.png`。图片缓存与 SDK 元数据缓存相互独立；`lazy=false` 更新元数据，不会立即清除已生成图片，图片会在 TTL 到期或进程重启后重建。
 
@@ -63,8 +63,7 @@ docker compose up --build -d
 | `PORT` | `8080` | HTTP 端口，自动遵循 Heroku 注入端口 |
 | `BIND` | 空（所有网卡） | 监听地址；Compose 默认只映射宿主机回环 |
 | `DATA_DIR` | 本地 `./data`；容器 `/data` | SQLite 所在目录 |
-| `DSN` | 空 | 数据库连接；优先于 `DATABASE_URL` |
-| `DATABASE_URL` | 空 | PostgreSQL 插件兼容变量；均为空时使用 SQLite |
+| `DSN` | 空 | SQLite 文件路径或 `file:` URI；为空时使用 `DATA_DIR/metadata.db` |
 | `TOKEN` | 空 | 本地无需认证；公网请设置，Heroku 自动生成 |
 | `EXCLUDED_GENRES` | 上述 8 个分类名 | 英文逗号分隔；显式设为空禁用过滤；设置时替换完整列表 |
 | `IMAGE_CACHE_MB` | `64` | 成品缓存预算 0–1024 MiB；0 禁用存储 |
@@ -87,7 +86,7 @@ SDK 的 `MT_*` provider 配置仍可使用，见上游项目；通常不必设�
 仓库提供 `app.json` 和 `heroku.yml`。使用私有仓库时先在 Heroku 连接相应 GitHub 账号，再选择本仓库；或使用 CLI 的 container 发布方式。Heroku 的 dyno 通常计费，模板不自动开通数据库等付费附加服务。
 
 - `app.json` 自动生成 `TOKEN`，启动后在应用 Config Vars 中读取并填入插件。
-- `DATA_DIR=/tmp/metatube` 使用临时 SQLite 缓存；dyno 替换或重启可能丢失缓存。如需保留，用 PostgreSQL `DATABASE_URL`。首次迁移需有创建表与 `pg_trgm` 扩展的权限。
+- `DATA_DIR=/tmp/metatube` 使用临时 SQLite 缓存；dyno 替换或重启可能丢失缓存。本版本仅支持 SQLite；需要持久化时应部署在能挂载持久卷的平台。
 - 进程读取平台的 `PORT`，不硬编码监听端口。
 - 默认请求时限 25 秒，先于常见的平台路由超时返回可读错误。
 - 图片缓存只在当前进程内，重启后为空；多实例不共享。需要跨实例缓存时，再引入对象存储或共享缓存。
@@ -104,7 +103,9 @@ make build
 make test
 ```
 
-测试覆盖真实 SDK + SQLite、Token、响应清洗、数据库原文保留、PNG 下载到 JPEG 输出、缓存命中、并发合并、LRU/TTL、参数拒绝、错误不缓存、ETag、超时、请求并发上限和图片大小限制。测试图片来自本地 HTTP 服务，不依赖外部网站。SDK 的 provider 集成测试依赖真实站点；这些测试不会在普通服务 CI 中执行。
+测试覆盖真实 SDK + SQLite、Token、响应清洗、数据库原文保留、PNG 下载到 WebP 输出、缓存命中、并发合并、LRU/TTL、参数拒绝、错误不缓存、ETag、超时、请求并发上限和图片大小限制。测试图片来自本地 HTTP 服务，不依赖外部网站。SDK 的 provider 集成测试依赖真实站点；这些测试不会在普通服务 CI 中执行。
+
+覆盖率、容器端到端测试及复现命令见 [docs/testing.md](docs/testing.md)。
 
 ## 许可证
 

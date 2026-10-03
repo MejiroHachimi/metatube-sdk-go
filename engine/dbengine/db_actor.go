@@ -5,7 +5,6 @@ import (
 
 	"gorm.io/gorm/clause"
 
-	"github.com/metatube-community/metatube-sdk-go/database"
 	"github.com/metatube-community/metatube-sdk-go/engine/providerid"
 	"github.com/metatube-community/metatube-sdk-go/model"
 )
@@ -49,18 +48,11 @@ func (e *engine) SearchActor(keyword string, opts ActorSearchOptions) ([]*model.
 	}
 
 	// keyword filter.
-	if e.Driver() == database.Postgres {
-		tx = tx.Where(
-			`(name COLLATE NOCASE = ? OR similarity(name, ?) > ?)`,
-			keyword, keyword, opts.Threshold,
-		)
-	} else { // Sqlite
-		pattern := "%" + keyword + "%"
-		tx = tx.Where(
-			`(name COLLATE NOCASE = ? OR name LIKE ? COLLATE NOCASE)`,
-			keyword, pattern,
-		)
-	}
+	pattern := "%" + keyword + "%"
+	tx = tx.Where(
+		`(name COLLATE NOCASE = ? OR name LIKE ? COLLATE NOCASE)`,
+		keyword, pattern,
+	)
 
 	// pagination.
 	if opts.Limit > 0 {

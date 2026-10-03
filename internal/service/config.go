@@ -25,8 +25,8 @@ func LoadConfig() (Config, error) {
 		c.DataDir = v
 	}
 	c.DSN = os.Getenv("DSN")
-	if c.DSN == "" {
-		c.DSN = os.Getenv("DATABASE_URL")
+	if os.Getenv("DATABASE_URL") != "" {
+		return c, fmt.Errorf("DATABASE_URL is no longer supported; use DATA_DIR or DSN for SQLite")
 	}
 	c.Token = os.Getenv("TOKEN")
 	port := os.Getenv("PORT")

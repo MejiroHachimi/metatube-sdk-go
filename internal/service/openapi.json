@@ -1593,7 +1593,7 @@
       "get": {
         "operationId": "v1_images_primary__provider___id",
         "summary": "Get primary image",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -1623,7 +1623,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -1657,7 +1657,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -1801,7 +1801,7 @@
       "head": {
         "operationId": "v1_images_primary__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -1831,7 +1831,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -1865,7 +1865,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -2011,7 +2011,7 @@
       "get": {
         "operationId": "v1_images_thumb__provider___id",
         "summary": "Get thumb image",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -2041,7 +2041,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -2075,7 +2075,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -2219,7 +2219,7 @@
       "head": {
         "operationId": "v1_images_thumb__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -2249,7 +2249,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -2283,7 +2283,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -2429,7 +2429,7 @@
       "get": {
         "operationId": "v1_images_backdrop__provider___id",
         "summary": "Get backdrop image",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -2459,7 +2459,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -2493,7 +2493,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -2637,7 +2637,7 @@
       "head": {
         "operationId": "v1_images_backdrop__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. JPEG is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
         "security": [],
         "parameters": [
           {
@@ -2667,7 +2667,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Processed JPEG",
+            "description": "Processed WebP (quality 80)",
             "headers": {
               "ETag": {
                 "schema": {
@@ -2701,7 +2701,7 @@
               }
             },
             "content": {
-              "image/jpeg": {
+              "image/webp": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -3012,9 +3012,9 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100,
-          "default": 90
+          "default": 80
         },
-        "description": "JPEG quality; part of the cache key."
+        "description": "Legacy parameter accepted for compatibility. Output is always WebP at quality 80; this parameter does not affect the cache key."
       }
     },
     "schemas": {

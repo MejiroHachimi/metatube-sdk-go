@@ -2,13 +2,11 @@ FROM golang:1.26.8-alpine AS build
 WORKDIR /src
 ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOMAXPROCS=4 GOFLAGS="-mod=readonly -p=4"
 COPY go.mod go.sum ./
-ARG BUILD_EXTRA_CA
-RUN if [ -n "$BUILD_EXTRA_CA" ]; then \
-      cp /etc/ssl/certs/ca-certificates.crt /tmp/build-ca.pem; \
-      printf '%s' "$BUILD_EXTRA_CA" | base64 -d >> /tmp/build-ca.pem; \
-      export SSL_CERT_FILE=/tmp/build-ca.pem; \
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then \
+      export SSL_CERT_FILE=/run/secrets/proxy_ca; \
     fi; \
-    go mod download && rm -f /tmp/build-ca.pem
+    go mod download
 COPY . .
 RUN go build -trimpath -ldflags="-s -w -X github.com/metatube-community/metatube-sdk-go/internal/version.Version=0.1.0" -o /out/metatube ./cmd/metatube
 
