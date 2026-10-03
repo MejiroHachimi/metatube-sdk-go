@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"image"
 
 	"github.com/metatube-community/metatube-sdk-go/common/number"
@@ -12,6 +13,14 @@ import (
 	mt "github.com/metatube-community/metatube-sdk-go/provider"
 )
 
+// ImageEngine is a request-scoped view; provider registries remain shared.
+type ImageEngine struct {
+	*Engine
+	ctx context.Context
+}
+
+func (e *Engine) Images(ctx context.Context) *ImageEngine { return &ImageEngine{Engine: e, ctx: ctx} }
+
 // Default position constants for different kind of images.
 const (
 	defaultActorPrimaryImagePosition  = 0.5
@@ -20,7 +29,7 @@ const (
 	defaultMovieBackdropImagePosition = 0.0
 )
 
-func (e *Engine) GetActorPrimaryImage(pid providerid.ProviderID) (image.Image, error) {
+func (e *ImageEngine) GetActorPrimaryImage(pid providerid.ProviderID) (image.Image, error) {
 	info, err := e.GetActorInfoByProviderID(pid, true)
 	if err != nil {
 		return nil, err
@@ -34,7 +43,7 @@ func (e *Engine) GetActorPrimaryImage(pid providerid.ProviderID) (image.Image, e
 	)
 }
 
-func (e *Engine) GetMoviePrimaryImage(pid providerid.ProviderID, ratio, pos float64) (image.Image, error) {
+func (e *ImageEngine) GetMoviePrimaryImage(pid providerid.ProviderID, ratio, pos float64) (image.Image, error) {
 	url, info, err := e.getPreferredMovieImageURLAndInfo(pid, true)
 	if err != nil {
 		return nil, err
@@ -53,7 +62,7 @@ func (e *Engine) GetMoviePrimaryImage(pid providerid.ProviderID, ratio, pos floa
 	)
 }
 
-func (e *Engine) GetMovieThumbImage(pid providerid.ProviderID) (image.Image, error) {
+func (e *ImageEngine) GetMovieThumbImage(pid providerid.ProviderID) (image.Image, error) {
 	url, _, err := e.getPreferredMovieImageURLAndInfo(pid, false)
 	if err != nil {
 		return nil, err
@@ -64,7 +73,7 @@ func (e *Engine) GetMovieThumbImage(pid providerid.ProviderID) (image.Image, err
 	)
 }
 
-func (e *Engine) GetMovieBackdropImage(pid providerid.ProviderID) (image.Image, error) {
+func (e *ImageEngine) GetMovieBackdropImage(pid providerid.ProviderID) (image.Image, error) {
 	url, _, err := e.getPreferredMovieImageURLAndInfo(pid, false)
 	if err != nil {
 		return nil, err
@@ -75,7 +84,7 @@ func (e *Engine) GetMovieBackdropImage(pid providerid.ProviderID) (image.Image, 
 	)
 }
 
-func (e *Engine) GetImageByURL(provider mt.Provider, url string, ratio, pos float64, auto bool) (img image.Image, err error) {
+func (e *ImageEngine) GetImageByURL(provider mt.Provider, url string, ratio, pos float64, auto bool) (img image.Image, err error) {
 	if img, err = e.getImageByURL(provider, url); err != nil {
 		return
 	}
@@ -90,13 +99,16 @@ func (e *Engine) GetImageByURL(provider mt.Provider, url string, ratio, pos floa
 	return imageutil.CropImagePosition(img, ratio, pos), nil
 }
 
-func (e *Engine) getImageByURL(provider mt.Provider, url string) (img image.Image, err error) {
+func (e *ImageEngine) getImageByURL(provider mt.Provider, url string) (img image.Image, err error) {
+	if err = e.ctx.Err(); err != nil {
+		return
+	}
 	resp, err := e.Fetch(url, provider)
 	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
-	img, _, err = imageutil.DecodeLimited(resp.Body)
+	img, _, err = imageutil.DecodeLimitedContext(e.ctx, resp.Body)
 	return
 }
 
@@ -112,4 +124,24 @@ func (e *Engine) getPreferredMovieImageURLAndInfo(pid providerid.ProviderID, thu
 		url = info.BigCoverURL
 	}
 	return
+}
+
+func (e *Engine) GetActorPrimaryImage(pid providerid.ProviderID) (image.Image, error) {
+	return e.Images(context.Background()).GetActorPrimaryImage(pid)
+}
+
+func (e *Engine) GetMoviePrimaryImage(pid providerid.ProviderID, ratio, pos float64) (image.Image, error) {
+	return e.Images(context.Background()).GetMoviePrimaryImage(pid, ratio, pos)
+}
+
+func (e *Engine) GetMovieThumbImage(pid providerid.ProviderID) (image.Image, error) {
+	return e.Images(context.Background()).GetMovieThumbImage(pid)
+}
+
+func (e *Engine) GetMovieBackdropImage(pid providerid.ProviderID) (image.Image, error) {
+	return e.Images(context.Background()).GetMovieBackdropImage(pid)
+}
+
+func (e *Engine) GetImageByURL(provider mt.Provider, url string, ratio, pos float64, auto bool) (image.Image, error) {
+	return e.Images(context.Background()).GetImageByURL(provider, url, ratio, pos, auto)
 }

@@ -1593,7 +1593,7 @@
       "get": {
         "operationId": "v1_images_primary__provider___id",
         "summary": "Get primary image",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {
@@ -1801,7 +1801,7 @@
       "head": {
         "operationId": "v1_images_primary__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {
@@ -2011,7 +2011,7 @@
       "get": {
         "operationId": "v1_images_thumb__provider___id",
         "summary": "Get thumb image",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {
@@ -2219,7 +2219,7 @@
       "head": {
         "operationId": "v1_images_thumb__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {
@@ -2429,7 +2429,7 @@
       "get": {
         "operationId": "v1_images_backdrop__provider___id",
         "summary": "Get backdrop image",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {
@@ -2637,7 +2637,7 @@
       "head": {
         "operationId": "v1_images_backdrop__provider___id_head",
         "summary": "Image headers without response body",
-        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas.",
+        "description": "Public endpoint to support Jellyfin image downloads. WebP at fixed quality 80 is cached in bounded process memory with a fixed TTL. Only successful images are cached; images larger than 8 MiB bypass storage. Encoded source images are limited to 16 MiB and 20 million pixels. HEAD and If-None-Match are supported. Cache is lost on restart and is not shared across replicas. Distinct cache misses enter a bounded queue. Decoding and encoding share a pixel budget; oversized pictures run exclusively. Queue wait counts towards the request timeout. A full queue returns 503; an expired wait returns 504.",
         "security": [],
         "parameters": [
           {

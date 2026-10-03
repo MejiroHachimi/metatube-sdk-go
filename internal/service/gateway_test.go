@@ -14,7 +14,7 @@ import (
 )
 
 func testConfig() Config {
-	return Config{CacheBytes: 1 << 20, CacheTTL: time.Hour, RequestTimeout: time.Second, MaxConcurrent: 4, ExcludedGenres: strings.Split(DefaultExcludedGenres, ",")}
+	return Config{CacheBytes: 1 << 20, CacheTTL: time.Hour, RequestTimeout: time.Second, MaxConcurrent: 4, ImageQueueSize: 16, ImagePixelBudget: 6_000_000, ExcludedGenres: strings.Split(DefaultExcludedGenres, ",")}
 }
 func request(h http.Handler, path string) *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()

@@ -10,9 +10,10 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
-	"golang.org/x/sync/singleflight"
+	"github.com/metatube-community/metatube-sdk-go/imageutil"
 )
 
 var errNotFound = errors.New("not found")
@@ -55,7 +56,10 @@ func errorResponse(code int, message string) response {
 type Gateway struct {
 	next          http.Handler
 	cache         *imageCache
-	flight        singleflight.Group
+	imageMu       sync.Mutex
+	images        map[string]*imageWork
+	imageJobs     chan struct{}
+	budget        *imageutil.Budget
 	slots         chan struct{}
 	config        Config
 	excluded      map[string]bool
@@ -70,7 +74,10 @@ func NewGateway(next http.Handler, c Config, checkImage func(*http.Request) erro
 			excluded[s] = true
 		}
 	}
-	return &Gateway{next: next, cache: newImageCache(c.CacheBytes, c.CacheTTL), slots: make(chan struct{}, c.MaxConcurrent), config: c, excluded: excluded, validateImage: checkImage, ready: ready}
+	if c.ImagePixelBudget == 0 {
+		c.ImagePixelBudget = 6_000_000
+	}
+	return &Gateway{images: make(map[string]*imageWork), imageJobs: make(chan struct{}, c.MaxConcurrent+c.ImageQueueSize), budget: imageutil.NewBudget(c.ImagePixelBudget), next: next, cache: newImageCache(c.CacheBytes, c.CacheTTL), slots: make(chan struct{}, c.MaxConcurrent), config: c, excluded: excluded, validateImage: checkImage, ready: ready}
 }
 func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -135,34 +142,36 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if image {
+		work := g.startImage(key, r)
+		if work == nil {
+			writeResponse(w, r, errorResponse(503, "image queue full; retry later"))
+			return
+		}
+		defer g.leaveImage(key, work)
+		select {
+		case <-work.done:
+			v := work.value
+			if v.status == 200 {
+				v.header = v.header.Clone()
+				v.header.Set("X-Cache", "MISS")
+			}
+			writeResponse(w, r, v)
+		case <-work.ctx.Done():
+			writeResponse(w, r, errorResponse(504, "image request timed out"))
+		case <-r.Context().Done():
+			return
+		}
+		return
+	}
 	request := r.Clone(context.WithoutCancel(r.Context()))
 	request.Method = "GET"
-	var result <-chan singleflight.Result
-	if image {
-		result = g.flight.DoChan(key, func() (any, error) {
-			if v, ok := g.cache.get(key); ok {
-				return v, nil
-			}
-			v := g.compute(request, image)
-			if v.status == 200 {
-				g.cache.put(key, v)
-			}
-			return v, nil
-		})
-	} else {
-		ch := make(chan singleflight.Result, 1)
-		result = ch
-		go func() { ch <- singleflight.Result{Val: g.compute(request, false)} }()
-	}
+	result := make(chan response, 1)
+	go func() { result <- g.compute(request, false) }()
 	timer := time.NewTimer(g.config.RequestTimeout)
 	defer timer.Stop()
 	select {
-	case got := <-result:
-		v := got.Val.(response)
-		if image && v.status == 200 {
-			v.header = v.header.Clone()
-			v.header.Set("X-Cache", "MISS")
-		}
+	case v := <-result:
 		writeResponse(w, r, v)
 	case <-timer.C:
 		writeResponse(w, r, errorResponse(504, "upstream request timed out"))
@@ -170,13 +179,33 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
 func (g *Gateway) compute(r *http.Request, image bool) (out response) {
-	select {
-	case g.slots <- struct{}{}:
-		defer func() { <-g.slots }()
-	default:
-		return errorResponse(503, "server busy; retry later")
+	if image {
+		if r.Context().Err() != nil {
+			return errorResponse(504, "image request timed out")
+		}
+		select {
+		case g.slots <- struct{}{}:
+			defer func() { <-g.slots }()
+		case <-r.Context().Done():
+			return errorResponse(504, "image request timed out")
+		}
+		if r.Context().Err() != nil {
+			return errorResponse(504, "image request timed out")
+		}
+		ctx, release := g.budget.Scope(r.Context())
+		defer release()
+		r = r.WithContext(ctx)
+	} else {
+		select {
+		case g.slots <- struct{}{}:
+			defer func() { <-g.slots }()
+		default:
+			return errorResponse(503, "server busy; retry later")
+		}
 	}
+
 	defer func() {
 		if recover() != nil {
 			out = errorResponse(500, "internal server error")
@@ -189,6 +218,9 @@ func (g *Gateway) compute(r *http.Request, image bool) (out response) {
 	}
 	c := &capture{header: make(http.Header)}
 	g.next.ServeHTTP(c, r)
+	if image && r.Context().Err() != nil {
+		return errorResponse(504, "image request timed out")
+	}
 	if c.overflow {
 		return errorResponse(502, "upstream response exceeds size limit")
 	}

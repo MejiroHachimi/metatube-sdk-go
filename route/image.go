@@ -50,6 +50,7 @@ func getImage(app *engine.Engine, typ imageType) gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
+		app := app.Images(c.Request.Context())
 		uri := &imageUri{}
 		if err := c.ShouldBindUri(uri); err != nil {
 			abortWithStatusMessage(c, http.StatusBadRequest, err)
@@ -126,6 +127,10 @@ func getImage(app *engine.Engine, typ imageType) gin.HandlerFunc {
 		c.Header("X-MetaTube-Image-Width", strconv.Itoa(img.Bounds().Dx()))
 		c.Header("X-MetaTube-Image-Height", strconv.Itoa(img.Bounds().Dy()))
 
+		if c.Request.Context().Err() != nil {
+			abortWithStatusMessage(c, http.StatusGatewayTimeout, "image request expired")
+			return
+		}
 		buf := &bytes.Buffer{}
 		if err = imageutil.EncodeToWebP(buf, img); err != nil {
 			panic(err)

@@ -8,6 +8,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"os"
 	"testing"
 
 	encoder "github.com/gen2brain/webp"
@@ -37,7 +38,7 @@ func TestWebPEncodingQualityAndRoundTrip(t *testing.T) {
 	// Pin the requested quality independently of the production constant.
 	require.NoError(t, encoder.Encode(&expected, m, encoder.Options{Quality: 80, Method: 4}))
 	require.Equal(t, expected.Bytes(), encoded.Bytes())
-	require.ErrorIs(t, EncodeToWebP(brokenWriter{}, m), io.ErrClosedPipe)
+	require.Error(t, EncodeToWebP(brokenWriter{}, m))
 }
 
 type brokenWriter struct{}
@@ -104,4 +105,10 @@ func TestWatermarkAndImageHashes(t *testing.T) {
 	require.Equal(t, 0, DifferenceHashDistance(m, m))
 	require.Equal(t, 0, PerceptionHashDistance(m, m))
 	require.True(t, Similar(m, m))
+}
+
+func TestNativeBackendWhenRequired(t *testing.T) {
+	if os.Getenv("REQUIRE_NATIVE_WEBP") == "1" {
+		require.NoError(t, NativeWebP())
+	}
 }

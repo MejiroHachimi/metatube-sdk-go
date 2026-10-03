@@ -19,5 +19,12 @@ jobs:
           path: coverage.out
       - run: CGO_ENABLED=0 go test -tags=nodynamic ./imageutil ./internal/service
       - run: CGO_ENABLED=0 go build ./...
+      - run: docker build --target test -t metatube:native-tests .
       - run: docker build -t metatube:test .
       - run: python3 scripts/smoke.py metatube:test
+      - name: Native image load test (512 MiB, 1 CPU)
+        run: |
+          docker build --target loadtest -t metatube:loadtest .
+          docker run -d --name metatube-loadtest --memory=512m --memory-swap=512m --cpus=1 -p 127.0.0.1:18080:8080 metatube:loadtest
+          trap 'docker logs metatube-loadtest; docker rm -f metatube-loadtest' EXIT
+          python3 scripts/loadtest.py http://127.0.0.1:18080

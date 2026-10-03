@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/metatube-community/metatube-sdk-go/internal/service"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +11,9 @@ import (
 	"syscall"
 	"time"
 	_ "time/tzdata"
+
+	"github.com/metatube-community/metatube-sdk-go/imageutil"
+	"github.com/metatube-community/metatube-sdk-go/internal/service"
 )
 
 func main() {
@@ -20,6 +23,15 @@ func main() {
 	}
 }
 func run() error {
+	if err := imageutil.NativeWebP(); err != nil {
+		if os.Getenv("REQUIRE_NATIVE_WEBP") == "1" {
+			return fmt.Errorf("native WebP backend required: %w", err)
+		}
+		log.Print("WebP backend: pure Go")
+	} else {
+		log.Print("WebP backend: native libwebp")
+	}
+
 	cfg, err := service.LoadConfig()
 	if err != nil {
 		return err
