@@ -32,6 +32,18 @@
 | 存储 | 仅 SQLite，Heroku 上不保证缓存持久化 |
 | 高级入口 | 不开放模块调试列表和 redirect 快捷入口 |
 
+## 分类与 Tag 的字段映射
+
+后端详情没有独立的 `tags` 字段。[上游插件的映射逻辑](https://github.com/metatube-community/jellyfin-plugin-metatube/blob/f7c1f336fc2bd3b35b82af7c6e69da09a196e3d2/Jellyfin.Plugin.MetaTube/Providers/MovieProvider.cs#L127)如下；不同插件版本或分支可能有所调整。
+
+| API 详情字段 | 插件写入媒体库 |
+| --- | --- |
+| `genres` | 分类（Genres），可经过插件的分类替换规则 |
+| `series`、`maker`、`label` | 各自非空时添加为 Tag |
+| `maker` | 还会写入制作商（Studio） |
+
+`label` 只表示厂牌，不代表全部 Tag。即使它为空，`maker` 或 `series` 仍可生成 Tag。`arbb014` 的实测详情有制作商、系列和 6 个分类，厂牌为空；API 页的 JSON 是字段摘录，未列出所有字段。
+
 分类清洗不会自动删除媒体库已有标签。调整排除配置后，需要刷新对应元数据或使用插件自身的分类替换任务；“1080P”分类与本地文件真实分辨率不是同一字段。
 
 ## 接入验收

@@ -1111,7 +1111,7 @@
         ],
         "responses": {
           "200": {
-            "description": "单一来源的完整详情。label 是厂牌，maker 是制作商，genres 是分类标签；来源或适配器未提供的字段可能为空。本例 JAV321 适配器未提取 label，因此实际返回空字符串。",
+            "description": "单一来源的完整详情。label 是厂牌，maker 是制作商，series 是系列，genres 是分类。上游 Jellyfin/Emby 插件将非空的 series、maker、label 分别添加为 Tag，将 genres 写入分类；API 没有独立的 tags 字段。本例 label 为空仍可有 Tag。",
             "content": {
               "application/json": {
                 "schema": {
@@ -1120,7 +1120,7 @@
                 "examples": {
                   "arbb014": {
                     "summary": "arbb014 实测 · 字段摘录",
-                    "description": "2026-10-03 实测 HTTP 200 的字段摘录，原值未改动。maker 为 ＆RiBbON；label 和 director 均为空，当前 JAV321 适配器未提取这两个字段。genres 等其余字段未在此摘录中展示，完整字段见 Schema。",
+                    "description": "2026-10-03 实测 HTTP 200 的字段摘录，原值未改动。maker 为 ＆RiBbON；label 和 director 均为空，当前 JAV321 适配器未提取这两个字段。完整响应还包含非空 series 和 6 个 genres，此摘录未展示；字段定义见 Schema。",
                     "value": {
                       "data": {
                         "id": "h_1092arbb00014",
@@ -3294,21 +3294,22 @@
           },
           "maker": {
             "type": "string",
-            "description": "制作商，与 label（厂牌）分别返回。"
+            "description": "制作商。上游 Jellyfin/Emby 插件将非空值同时写入 Studio 和 Tag。"
           },
           "label": {
             "type": "string",
-            "description": "厂牌（发行品牌），不是分类标签。来源或适配器未提供时为空字符串；不会自动取 maker 或其他来源的值。"
+            "description": "厂牌（发行品牌）。来源或适配器未提供时为空字符串；不会自动取 maker 或其他来源的值。上游插件在非空时将其添加为 Tag，但它不是 Tag 的唯一来源。"
           },
           "series": {
-            "type": "string"
+            "type": "string",
+            "description": "系列。上游 Jellyfin/Emby 插件将非空值添加为 Tag。"
           },
           "genres": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "分类标签；响应时会进行分类清洗。不同来源提供的分类可能不同。"
+            "description": "分类数组；响应时会进行分类清洗。上游 Jellyfin/Emby 插件将其写入 Genres；界面的 Tags 另由非空的 series、maker、label 添加。"
           },
           "score": {
             "type": "number"
