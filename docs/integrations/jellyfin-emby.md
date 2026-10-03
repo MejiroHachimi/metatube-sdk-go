@@ -46,6 +46,27 @@
 
 分类清洗不会自动删除媒体库已有标签。调整排除配置后，需要刷新对应元数据或使用插件自身的分类替换任务；“1080P”分类与本地文件真实分辨率不是同一字段。
 
+## 分类规则与现成工具
+
+后端的 `EXCLUDED_GENRES` 适合多个客户端共用的排除名单，匹配方式见[环境变量](../configuration.md)。分辨率、载体等分类是否保留取决于媒体库用途；独占发行、限时发行等信息也并非对所有用户都无用，因此默认名单不自动扩张。
+
+仅需调整 Jellyfin/Emby 显示时，可直接使用插件的 **Enable genre substitution** 和 **Genre substitution table**。一行一条 `原分类=新分类`，等号右侧留空表示删除；分类数组按完整名称、不区分大小写匹配。例如以下是可选规则，不会自动启用：
+
+```text
+ハイビジョン=
+Sci-Fi=科幻
+Science Fiction=科幻
+```
+
+规则只作用于分类，不会清空 `maker`、`label`、`series`。后端过滤先于插件替换执行，被后端排除的分类不会再交给插件处理。[插件规则实现](https://github.com/metatube-community/jellyfin-plugin-metatube/blob/f7c1f336fc2bd3b35b82af7c6e69da09a196e3d2/Jellyfin.Plugin.MetaTube/Helpers/SubstitutionTable.cs#L51)不需要另行安装过滤框架；不同插件版本的设置名称可能略有不同。
+
+| 工具 | 适用范围与当前选择 |
+| --- | --- |
+| [bluemonday](https://github.com/microcosm-cc/bluemonday) | 已用于 HTML 清洗；不负责判断哪些分类有用 |
+| [Go x/text / norm](https://pkg.go.dev/golang.org/x/text/unicode/norm) | 已有依赖，用于分类匹配键的 Unicode 归一化，无需新增框架 |
+| [Stash](https://github.com/stashapp/stash) | 完整的媒体管理应用，具备标签别名与层级；可参考其分类管理设计，不作为本服务的过滤库直接嵌入 |
+| [CEL-Go](https://github.com/cel-expr/cel-go) | 可嵌入的表达式引擎，适合以后按来源、字段等组合条件编写规则；当前精确名单与替换表尚不需要它，也不自带分类词库 |
+
 ## 接入验收
 
 - 从媒体服务器所在网络访问 `/readyz` 和 `/v1/providers`。

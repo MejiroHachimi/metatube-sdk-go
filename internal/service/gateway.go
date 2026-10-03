@@ -70,7 +70,7 @@ type Gateway struct {
 func NewGateway(next http.Handler, c Config, checkImage func(*http.Request) error, ready func(context.Context) error) *Gateway {
 	excluded := map[string]bool{}
 	for _, s := range c.ExcludedGenres {
-		if s = strings.ToLower(strings.TrimSpace(s)); s != "" {
+		if s = genreKey(s); s != "" {
 			excluded[s] = true
 		}
 	}

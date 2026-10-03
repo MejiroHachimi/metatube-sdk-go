@@ -2,14 +2,21 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/microcosm-cc/bluemonday"
 	"html"
 	"strings"
+
+	"github.com/microcosm-cc/bluemonday"
+	"golang.org/x/text/unicode/norm"
 )
 
 var plainText = bluemonday.StrictPolicy()
 var listFields = map[string]bool{"genres": true, "actors": true, "aliases": true, "images": true, "preview_images": true}
 var textFields = map[string]bool{"title": true, "summary": true, "name": true, "comment": true, "author": true, "hobby": true, "skill": true, "director": true, "maker": true, "label": true, "series": true}
+
+// genreKey normalizes comparison only; surviving values keep their spelling.
+func genreKey(s string) string {
+	return strings.ToLower(strings.Join(strings.Fields(norm.NFKC.String(s)), " "))
+}
 
 func cleanJSON(body []byte, excluded map[string]bool) ([]byte, error) {
 	var value any
@@ -35,7 +42,9 @@ func cleanJSON(body []byte, excluded map[string]bool) ([]byte, error) {
 							}
 							s = strings.TrimSpace(s)
 							key := strings.ToLower(s)
-							if k == "images" || k == "preview_images" {
+							if k == "genres" {
+								key = genreKey(s)
+							} else if k == "images" || k == "preview_images" {
 								key = s
 							}
 							if s == "" || seen[key] || (k == "genres" && excluded[key]) {

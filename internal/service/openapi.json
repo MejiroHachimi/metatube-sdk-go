@@ -3335,7 +3335,7 @@
             "items": {
               "type": "string"
             },
-            "description": "分类数组；响应时会进行分类清洗。上游 Jellyfin/Emby 插件将其写入 Genres；界面的 Tags 另由非空的 series、maker、label 添加。"
+            "description": "分类数组；响应时清洗、去重并按配置排除完整分类名。匹配忽略大小写、Unicode NFKC 等价写法及连续空白，保留项沿用首次出现的写法。上游 Jellyfin/Emby 插件将其写入 Genres；Tags 另由非空的 series、maker、label 添加。"
           },
           "score": {
             "type": "number"
