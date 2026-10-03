@@ -4,6 +4,8 @@ API 根地址是你部署的 MetaTube 服务，例如 `https://your-app.example`
 
 完整的参数、默认值、状态码和模型见[自动生成的参考](reference.md)，也可[下载 OpenAPI JSON](openapi.json)。
 
+需要实际请求与返回示例时，见 [arbb014 搜索与刮削实测](arbb014.md)：包含真实参数、HTTP 状态和响应字段摘录。
+
 ## 认证与响应
 
 配置 `TOKEN` 后，元数据、搜索、评论和数据库版本接口使用 `Authorization: Bearer <TOKEN>`。不要把 Token 放入查询字符串。未配置 Token 时这些接口也可公开访问。

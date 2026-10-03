@@ -53,6 +53,7 @@ nav:
       - 环境变量: configuration.md
   - API:
       - 调用指南: api/index.md
+      - arbb014 实测示例: api/arbb014.md
       - 完整接口与模型: api/reference.md
   - 接入与适配:
       - Jellyfin / Emby: integrations/jellyfin-emby.md
